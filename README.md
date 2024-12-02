@@ -64,26 +64,24 @@
 <h2>Приклади використання</h2>
 
 <p>Головна сторінка:</p>
-<p align="center">
-  ![image](https://github.com/user-attachments/assets/c352445b-5ab2-4fee-a50d-49fc8de68132)
+
+![image](https://github.com/user-attachments/assets/c352445b-5ab2-4fee-a50d-49fc8de68132)
 ![image](https://github.com/user-attachments/assets/7776e12f-c304-4cda-a79e-7eb8cb4a7667)
 
-</p>
-
 <p>Сторінка товару:</p>
-<p align="center">
-   ![image](https://github.com/user-attachments/assets/bf4856e6-da0b-459c-8155-d6662c5f6641)
-  ![image](https://github.com/user-attachments/assets/fb80c6a7-95ae-42ba-ad06-974a195d1a48)
 
-</p>
+![image](https://github.com/user-attachments/assets/bf4856e6-da0b-459c-8155-d6662c5f6641)
+![image](https://github.com/user-attachments/assets/fb80c6a7-95ae-42ba-ad06-974a195d1a48)
+
 <p>Карта та офрмлення замовлення:</p>
-<p align="center">
-   ![image](https://github.com/user-attachments/assets/a9f53e12-04da-4d64-8039-8a6f1002b89f)
-   ![image](https://github.com/user-attachments/assets/fdaafadf-ca19-4460-9aed-db12a0b9c47f)
-   ![image](https://github.com/user-attachments/assets/4552dbdc-b3b1-48d2-919c-34d22d8a4b8e)
-   ![image](https://github.com/user-attachments/assets/3da182fb-7914-4e34-840a-dbe9f2f00472)
-   ![image](https://github.com/user-attachments/assets/16ed9494-2773-4110-abc4-e214c7279ab9)
-</p>
+
+![image](https://github.com/user-attachments/assets/a9f53e12-04da-4d64-8039-8a6f1002b89f)
+![image](https://github.com/user-attachments/assets/fdaafadf-ca19-4460-9aed-db12a0b9c47f)
+![image](https://github.com/user-attachments/assets/4552dbdc-b3b1-48d2-919c-34d22d8a4b8e)
+![image](https://github.com/user-attachments/assets/3da182fb-7914-4e34-840a-dbe9f2f00472)
+![image](https://github.com/user-attachments/assets/16ed9494-2773-4110-abc4-e214c7279ab9)
+
+
 
 
 
