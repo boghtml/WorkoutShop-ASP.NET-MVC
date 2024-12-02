@@ -1,0 +1,58 @@
+﻿@model WorkoutShop.Models.Order
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Edit Order";
+
+    var statusList = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "Pending", Text = "Pending", Selected = Model.Status == "Pending" },
+        new SelectListItem { Value = "Processing", Text = "Processing", Selected = Model.Status == "Processing" },
+        new SelectListItem { Value = "Completed", Text = "Completed", Selected = Model.Status == "Completed" }
+    };
+}
+
+<h1>Edit Order</h1>
+
+<div>
+    <h3>Order ID: @Model.OrderId</h3>
+    <p>User: @Model.User.Email</p>
+    <p>Date: @Model.OrderDate.ToString("g")</p>
+    <p>Total Price: @Model.TotalPrice.ToString("C")</p>
+
+    <h4>Order Items</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@(item.Price * item.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-area="Admin" asp-controller="Order" asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.OrderId" />
+        <div class="form-group">
+            <label for="status">Status</label>
+            @Html.DropDownList("status", statusList, new { @class = "form-control" })
+        </div>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>

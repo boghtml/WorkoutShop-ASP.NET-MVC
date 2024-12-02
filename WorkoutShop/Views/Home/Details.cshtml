@@ -1,0 +1,161 @@
+﻿@model WorkoutShop.Models.Product
+@{
+    ViewData["Title"] = $"{Model.Name} - WorkoutShop";
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { category = Model.Category?.Name })">@Model.Category?.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            @if (Model.ProductImages != null && Model.ProductImages.Any())
+            {
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach (var image in Model.ProductImages)
+                        {
+                            <div class="carousel-item @(image.IsPrimary ? "active" : "")">
+                                <img src="@image.ImageUrl" class="d-block w-100" alt="@Model.Name" style="object-fit: contain; height: 500px;">
+                            </div>
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+                <div class="row mt-2">
+                    @foreach (var image in Model.ProductImages.Take(4))
+                    {
+                        <div class="col-3">
+                            <img src="@image.ImageUrl" class="img-thumbnail" alt="@Model.Name" style="object-fit: cover; height: 80px; width: 100%; cursor: pointer;" onclick="$('#productCarousel').carousel($('.carousel-item').index($(`.carousel-item:has(img[src='@image.ImageUrl'])`)))">
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <img src="~/images/no-image.png" class="img-fluid" alt="No Image" style="object-fit: contain; height: 500px; width: 100%;">
+            }
+        </div>
+        <div class="col-md-6">
+            <h1 class="mb-3">@Model.Name</h1>
+            <p class="lead">@Model.Description</p>
+            <h3 class="text-primary mb-3">@Model.Price.ToString("C")</h3>
+            <p>Category: <a href="@Url.Action("Index", "Home", new { category = Model.Category?.Name })" class="badge bg-secondary text-decoration-none">@Model.Category?.Name</a></p>
+            <p>
+                Stock:
+                <span class="badge bg-@(Model.StockQuantity > 10 ? "success" : (Model.StockQuantity > 0 ? "warning" : "danger"))">
+                    @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
+                </span>
+            </p>
+            @if (Model.StockQuantity > 0)
+            {
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    <input type="hidden" name="productId" value="@Model.ProductId" />
+                    <div class="input-group mb-3" style="max-width: 200px;">
+                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="@Model.StockQuantity" id="quantityInput" />
+                        <button class="btn btn-primary" type="submit" id="addToCartBtn">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <button class="btn btn-secondary btn-lg" disabled>Out of Stock</button>
+            }
+            <hr>
+            <h4>Product Features</h4>
+            <ul class="list-unstyled">
+                <li><i class="fas fa-check text-success me-2"></i>High-quality materials</li>
+                <li><i class="fas fa-check text-success me-2"></i>Durable construction</li>
+                <li><i class="fas fa-check text-success me-2"></i>Suitable for all fitness levels</li>
+                <li><i class="fas fa-check text-success me-2"></i>Easy to clean and maintain</li>
+            </ul>
+            <hr>
+            <h4>Shipping Information</h4>
+            <p><i class="fas fa-truck me-2"></i>Free shipping on orders over $100</p>
+            <p><i class="fas fa-box me-2"></i>30-day return policy</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8">
+            <h3>Product Description</h3>
+            <p>@Html.Raw(Model.Description)</p>
+        </div>
+        <div class="col-md-4">
+            <h3>Customer Reviews</h3>
+            <!-- Add a review system here if available -->
+            <p>Coming soon!</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Related Products</h3>
+            <!-- Add related products carousel or grid here -->
+            <p>Check out these similar products:</p>
+            <!-- Placeholder for related products -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var carousel = new bootstrap.Carousel(document.getElementById('productCarousel'), {
+                interval: false
+            });
+
+            $(document).keydown(function (e) {
+                if (e.keyCode == 37) {
+                    carousel.prev();
+                }
+                else if (e.keyCode == 39) {
+                    carousel.next();
+                }
+            });
+
+            $('#productCarousel').focus();
+
+            // Quantity input validation
+            $('#quantityInput').on('input', function () {
+                var max = parseInt($(this).attr('max'));
+                var value = parseInt($(this).val());
+                if (value > max) {
+                    $(this).val(max);
+                }
+            });
+
+            // Add to cart animation
+            $('#addToCartBtn').click(function (e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        $('#cartItemCount').text(response.cartItemCount);
+                        $('#addToCartBtn').addClass('btn-success').removeClass('btn-primary');
+                        $('#addToCartBtn').html('<i class="fas fa-check"></i> Added to Cart');
+                        setTimeout(function () {
+                            $('#addToCartBtn').addClass('btn-primary').removeClass('btn-success');
+                            $('#addToCartBtn').html('<i class="fas fa-cart-plus"></i> Add to Cart');
+                        }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
+}

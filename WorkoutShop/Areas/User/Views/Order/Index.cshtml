@@ -1,0 +1,123 @@
+﻿@model IEnumerable<WorkoutShop.Models.Order>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Your Orders - WorkoutShop";
+    var statusFilter = Context.Request.Query["statusFilter"].ToString();
+    var sortOrder = Context.Request.Query["sortOrder"].ToString();
+    var statusList = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "All" },
+        new SelectListItem { Value = "Pending", Text = "Pending" },
+        new SelectListItem { Value = "Processing", Text = "Processing" },
+        new SelectListItem { Value = "Completed", Text = "Completed" },
+        new SelectListItem { Value = "Cancelled", Text = "Cancelled" }
+    };
+    var statusSelectList = new SelectList(statusList, "Value", "Text", statusFilter);
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Your Orders</h1>
+
+    <form method="get" class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Filter by Status</label>
+                <select name="statusFilter" id="statusFilter" class="form-select" asp-items="statusSelectList">
+                    <option value="">All</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="sortOrder" class="form-label">Sort By</label>
+                <select name="sortOrder" id="sortOrder" class="form-select">
+                    <option value="">Date (Newest First)</option>
+                    <option value="date_desc" asp-selected="@(sortOrder == "date_desc")">Date (Oldest First)</option>
+                    <option value="price_asc" asp-selected="@(sortOrder == "price_asc")">Price (Low to High)</option>
+                    <option value="price_desc" asp-selected="@(sortOrder == "price_desc")">Price (High to Low)</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4 class="alert-heading"><i class="fas fa-info-circle"></i> No Orders Found</h4>
+            <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+            <hr>
+            <p class="mb-0">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-shopping-cart"></i> Start Shopping
+                </a>
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>#@order.OrderId</td>
+                            <td>@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td>
+                                @{
+                                    var badgeClass = order.Status switch
+                                    {
+                                        "Pending" => "bg-warning",
+                                        "Processing" => "bg-info",
+                                        "Completed" => "bg-success",
+                                        "Cancelled" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass">@order.Status</span>
+                            </td>
+                            <td>@order.TotalPrice.ToString("C")</td>
+                            <td>
+                                <a asp-area="User" asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#statusFilter, #sortOrder').change(function () {
+                $(this).closest('form').submit();
+            });
+        });
+    </script>
+}

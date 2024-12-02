@@ -1,0 +1,53 @@
+﻿@model WorkoutShop.Models.ShoppingCart
+
+@{
+    ViewData["Title"] = "Your Shopping Cart";
+}
+
+<h1>Your Shopping Cart</h1>
+
+@if (Model == null || Model.CartItems == null || !Model.CartItems.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>
+                        <form asp-action="UpdateCartItem" method="post">
+                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" />
+                            <button type="submit" class="btn btn-link">Update</button>
+                        </form>
+                    </td>
+                    <td>@(item.Product.Price * item.Quantity)</td>
+                    <td>
+                        <form asp-action="RemoveFromCart" method="post">
+                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Total: @Model.CartItems.Sum(ci => ci.Product.Price * ci.Quantity).ToString("C")</h3>
+
+    <a class="btn btn-primary" asp-area="User" asp-controller="Order" asp-action="Checkout">Proceed to Checkout</a>
+}

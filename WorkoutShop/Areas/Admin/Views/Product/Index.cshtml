@@ -1,0 +1,71 @@
+﻿@model IEnumerable<WorkoutShop.Models.Product>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using WorkoutShop.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Products Management";
+    var categories = ViewBag.Categories as IEnumerable<Category>;
+}
+
+<h1>Products Management</h1>
+
+<form method="get" class="form-inline mb-3">
+    <div class="form-group me-2">
+        <input type="text" name="searchTerm" value="@Context.Request.Query["searchTerm"]" class="form-control" placeholder="Search by name or description" />
+    </div>
+    <div class="form-group me-2">
+        @{
+            var selectedCategoryId = Context.Request.Query["categoryId"].ToString();
+            var categorySelectList = new SelectList(categories, "CategoryId", "Name", selectedCategoryId);
+        }
+        <select name="categoryId" class="form-control" asp-items="categorySelectList">
+            <option value="">All Categories</option>
+        </select>
+    </div>
+    <!-- Додайте інші поля фільтрації та сортування -->
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary ms-2">Reset</a>
+</form>
+
+<a asp-action="Create" asp-area="Admin" class="btn btn-success mb-3">Create New Product</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>
+                @Html.ActionLink("Name", "Index", new { sortOrder = Context.Request.Query["sortOrder"] == "name_asc" ? "name_desc" : "name_asc", searchTerm = Context.Request.Query["searchTerm"], categoryId = Context.Request.Query["categoryId"], minPrice = Context.Request.Query["minPrice"], maxPrice = Context.Request.Query["maxPrice"] })
+            </th>
+            <th>Category</th>
+            <th>
+                @Html.ActionLink("Price", "Index", new { sortOrder = Context.Request.Query["sortOrder"] == "price_asc" ? "price_desc" : "price_asc", searchTerm = Context.Request.Query["searchTerm"], categoryId = Context.Request.Query["categoryId"], minPrice = Context.Request.Query["minPrice"], maxPrice = Context.Request.Query["maxPrice"] })
+            </th>
+            <th>Stock Quantity</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.ProductId</td>
+                <td>@product.Name</td>
+                <td>@product.Category?.Name</td>
+                <td>@product.Price.ToString("C")</td>
+                <td>@product.StockQuantity</td>
+                <td>
+                    @if (product.ProductImages != null && product.ProductImages.Any())
+                    {
+                        <img src="@product.ProductImages.First().ImageUrl" width="50" height="50" />
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

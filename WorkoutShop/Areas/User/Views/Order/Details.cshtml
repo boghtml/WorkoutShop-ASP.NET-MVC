@@ -1,0 +1,89 @@
+﻿@model WorkoutShop.Models.Order
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = $"Order Details #{Model.OrderId} - WorkoutShop";
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Order Details</h1>
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Order #@Model.OrderId</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Date:</strong> @Model.OrderDate.ToString("MMMM dd, yyyy HH:mm")</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge bg-@(Model.Status switch {
+                            "Pending" => "warning",
+                            "Processing" => "info",
+                            "Completed" => "success",
+                            "Cancelled" => "danger",
+                            _ => "secondary"
+                        })">@Model.Status</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p><strong>Total:</strong> <span class="h4 text-primary">@Model.TotalPrice.ToString("C")</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Order Items</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none">
+                                        @item.Product.Name
+                                    </a>
+                                </td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Price.ToString("C")</td>
+                                <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-active">
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>@Model.TotalPrice.ToString("C")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-area="User" asp-controller="Order" asp-action="Index" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Orders
+        </a>
+    </div>
+</div>

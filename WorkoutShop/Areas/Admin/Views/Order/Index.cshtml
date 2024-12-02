@@ -1,0 +1,68 @@
+﻿@model IEnumerable<WorkoutShop.Models.Order>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Orders Management";
+    var currentStatus = Context.Request.Query["status"].ToString();
+    var searchString = Context.Request.Query["searchString"].ToString();
+
+    // Створюємо список статусів
+    var statusList = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "", Text = "All" },
+        new SelectListItem { Value = "Pending", Text = "Pending" },
+        new SelectListItem { Value = "Processing", Text = "Processing" },
+        new SelectListItem { Value = "Completed", Text = "Completed" }
+    };
+
+    // Встановлюємо вибраний статус
+    var statusSelectList = new SelectList(statusList, "Value", "Text", currentStatus);
+}
+
+<h1>Orders Management</h1>
+
+<form method="get" class="form-inline mb-3">
+    <div class="form-group me-2">
+        <input type="text" name="searchString" value="@searchString" class="form-control" placeholder="Search by User Email" />
+    </div>
+    <div class="form-group me-2">
+        <label for="status">Filter by Status:</label>
+        <select name="status" class="form-control" asp-items="statusSelectList" onchange="this.form.submit()">
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary ms-2">Reset</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>
+                @Html.ActionLink("Date", "Index", new { sortOrder = ViewBag.DateSortParm, searchString = searchString, status = currentStatus })
+            </th>
+            <th>Status</th>
+            <th>
+                @Html.ActionLink("Total Price", "Index", new { sortOrder = ViewBag.PriceSortParm, searchString = searchString, status = currentStatus })
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.User.Email</td>
+                <td>@order.OrderDate.ToString("g")</td>
+                <td>@order.Status</td>
+                <td>@order.TotalPrice.ToString("C")</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Order" asp-action="Edit" asp-route-id="@order.OrderId" class="btn btn-primary btn-sm">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

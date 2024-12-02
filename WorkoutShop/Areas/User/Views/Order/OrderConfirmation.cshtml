@@ -1,0 +1,36 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle text-success fa-5x mb-3"></i>
+                    <h1 class="card-title">Thank You for Your Order!</h1>
+                    <p class="card-text lead">Your order has been placed successfully.</p>
+                    <p class="card-text">We'll send you an email confirmation with order details and tracking information once your order ships.</p>
+                    <hr>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a asp-area="User" asp-controller="Order" asp-action="Index" class="btn btn-primary btn-lg">
+                            <i class="fas fa-list-ul"></i> View My Orders
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-home"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
