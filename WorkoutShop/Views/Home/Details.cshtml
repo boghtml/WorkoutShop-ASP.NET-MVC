@@ -1,161 +1,967 @@
 ﻿@model WorkoutShop.Models.Product
 @{
     ViewData["Title"] = $"{Model.Name} - WorkoutShop";
+    var rating = 4.5; // Simulated rating
+    var reviewCount = 127; // Simulated review count
 }
 
-<div class="container mt-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { category = Model.Category?.Name })">@Model.Category?.Name</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
-        </ol>
-    </nav>
+<style>
+    .product-detail-page {
+        background: #f8f9fa;
+        padding: 30px 0;
+    }
+    
+    .breadcrumb {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .breadcrumb-item a {
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: #5568d3;
+    }
+    
+    .product-image-gallery {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 100px;
+    }
+    
+    .main-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        background: #f8f9fa;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .main-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+    
+    .main-image-container:hover .main-image {
+        transform: scale(1.05);
+    }
+    
+    .badge-overlay {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+    }
+    
+    .thumbnail-gallery {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        object-fit: cover;
+    }
+    
+    .thumbnail:hover, .thumbnail.active {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .product-info {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .product-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
+    
+    .category-badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #e6f2ff;
+        color: #2563eb;
+        border: none;
+    }
+    
+    .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    
+    .rating-text {
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    .price-section {
+        padding: 25px 0;
+        margin: 20px 0;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .current-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0;
+    }
+    
+    .original-price {
+        font-size: 1rem;
+        color: #94a3b8;
+        text-decoration: line-through;
+        margin-left: 12px;
+        font-weight: 400;
+    }
+    
+    .savings-badge {
+        background: #dcfce7;
+        color: #16a34a;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-block;
+        margin-left: 12px;
+    }
+    
+    .stock-indicator {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 0;
+        margin: 20px 0 0 0;
+    }
+    
+    .stock-indicator i {
+        font-size: 1.25rem;
+    }
+    
+    .stock-text {
+        font-size: 0.95rem;
+        color: #475569;
+    }
+    
+    .quantity-selector {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        margin: 25px 0;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .qty-label {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #475569;
+        margin-right: 15px;
+    }
+    
+    .qty-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: white;
+        color: #475569;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .qty-btn:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+    
+    .qty-input {
+        width: 50px;
+        height: 36px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #cbd5e1;
+        border-right: 1px solid #cbd5e1;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1a202c;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin: 25px 0;
+    }
+    
+    .btn-add-cart {
+        flex: 1;
+        padding: 14px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        background: #2563eb;
+        color: white;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .btn-add-cart:hover {
+        background: #1d4ed8;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-wishlist, .btn-compare {
+        width: 48px;
+        height: 48px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #64748b;
+    }
+    
+    .btn-wishlist:hover, .btn-compare:hover {
+        border-color: #94a3b8;
+        background: #f8fafc;
+        color: #1e293b;
+    }
+    
+    .btn-wishlist.active {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #dc2626;
+    }
+    
+    .product-tabs {
+        margin-top: 40px;
+    }
+    
+    .nav-tabs {
+        border: none;
+        gap: 10px;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        background: white;
+        color: #666;
+        padding: 15px 30px;
+        border-radius: 10px 10px 0 0;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        color: #667eea;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .tab-content {
+        background: white;
+        padding: 30px;
+        border-radius: 0 10px 10px 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .feature-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .feature-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-icon {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .info-card {
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin: 15px 0;
+        transition: all 0.2s ease;
+    }
+    
+    .info-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .info-card i {
+        color: #3b82f6;
+    }
+    
+    .info-card strong {
+        font-size: 0.95rem;
+        color: #1e293b;
+    }
+    
+    .review-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .review-date {
+        color: #999;
+        font-size: 0.9rem;
+    }
+</style>
 
-    <div class="row">
-        <div class="col-md-6">
-            @if (Model.ProductImages != null && Model.ProductImages.Any())
-            {
-                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        @foreach (var image in Model.ProductImages)
+<div class="product-detail-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-house-door me-1"></i>Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="@Model.Category?.CategoryId">
+                        @Model.Category?.Name
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Image Gallery -->
+            <div class="col-lg-5 mb-4">
+                <div class="product-image-gallery">
+                    <div class="main-image-container" id="mainImageContainer">
+                        @if (Model.ProductImages != null && Model.ProductImages.Any())
                         {
-                            <div class="carousel-item @(image.IsPrimary ? "active" : "")">
-                                <img src="@image.ImageUrl" class="d-block w-100" alt="@Model.Name" style="object-fit: contain; height: 500px;">
-                            </div>
+                            <img src="@Model.ProductImages.FirstOrDefault(i => i.IsPrimary)?.ImageUrl" 
+                                 alt="@Model.Name" 
+                                 class="main-image" 
+                                 id="mainImage">
+                            
+                            @if (Model.StockQuantity <= 0)
+                            {
+                                <div class="badge-overlay">
+                                    <span class="badge bg-danger fs-6">Out of Stock</span>
+                                </div>
+                            }
+                            else if (Model.StockQuantity < 10)
+                            {
+                                <div class="badge-overlay">
+                                    <span class="badge bg-warning text-dark fs-6">Limited Stock</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <img src="~/images/no-image.png" alt="No Image" class="main-image">
                         }
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
-                </div>
-                <div class="row mt-2">
-                    @foreach (var image in Model.ProductImages.Take(4))
+                    
+                    @if (Model.ProductImages != null && Model.ProductImages.Any())
                     {
-                        <div class="col-3">
-                            <img src="@image.ImageUrl" class="img-thumbnail" alt="@Model.Name" style="object-fit: cover; height: 80px; width: 100%; cursor: pointer;" onclick="$('#productCarousel').carousel($('.carousel-item').index($(`.carousel-item:has(img[src='@image.ImageUrl'])`)))">
+                        <div class="thumbnail-gallery">
+                            @foreach (var image in Model.ProductImages)
+                            {
+                                <img src="@image.ImageUrl" 
+                                     alt="@Model.Name" 
+                                     class="thumbnail @(image.IsPrimary ? "active" : "")" 
+                                     onclick="changeMainImage('@image.ImageUrl', this)">
+                            }
                         </div>
                     }
                 </div>
-            }
-            else
-            {
-                <img src="~/images/no-image.png" class="img-fluid" alt="No Image" style="object-fit: contain; height: 500px; width: 100%;">
-            }
-        </div>
-        <div class="col-md-6">
-            <h1 class="mb-3">@Model.Name</h1>
-            <p class="lead">@Model.Description</p>
-            <h3 class="text-primary mb-3">@Model.Price.ToString("C")</h3>
-            <p>Category: <a href="@Url.Action("Index", "Home", new { category = Model.Category?.Name })" class="badge bg-secondary text-decoration-none">@Model.Category?.Name</a></p>
-            <p>
-                Stock:
-                <span class="badge bg-@(Model.StockQuantity > 10 ? "success" : (Model.StockQuantity > 0 ? "warning" : "danger"))">
-                    @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
-                </span>
-            </p>
-            @if (Model.StockQuantity > 0)
-            {
-                <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                    <input type="hidden" name="productId" value="@Model.ProductId" />
-                    <div class="input-group mb-3" style="max-width: 200px;">
-                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="@Model.StockQuantity" id="quantityInput" />
-                        <button class="btn btn-primary" type="submit" id="addToCartBtn">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
-                        </button>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-lg-7">
+                <div class="product-info">
+                    <span class="category-badge mb-2 d-inline-block">@Model.Category?.Name</span>
+                    <h1 class="product-title">@Model.Name</h1>
+                    
+                    <!-- Rating -->
+                    <div class="rating-section mb-3">
+                        <div class="stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Floor(rating))
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else if (i - rating < 1)
+                                {
+                                    <i class="bi bi-star-half"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <span class="rating-text">@rating (@reviewCount reviews)</span>
                     </div>
-                </form>
-            }
-            else
-            {
-                <button class="btn btn-secondary btn-lg" disabled>Out of Stock</button>
-            }
-            <hr>
-            <h4>Product Features</h4>
-            <ul class="list-unstyled">
-                <li><i class="fas fa-check text-success me-2"></i>High-quality materials</li>
-                <li><i class="fas fa-check text-success me-2"></i>Durable construction</li>
-                <li><i class="fas fa-check text-success me-2"></i>Suitable for all fitness levels</li>
-                <li><i class="fas fa-check text-success me-2"></i>Easy to clean and maintain</li>
+                    
+                    <!-- Price -->
+                    <div class="price-section">
+                        <div class="d-flex align-items-center">
+                            <h2 class="current-price">@Model.Price.ToString("C")</h2>
+                            <span class="original-price">@((Model.Price * 1.25m).ToString("C"))</span>
+                            <span class="savings-badge">Save 20%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Stock Status -->
+                    <div class="stock-indicator">
+                        @if (Model.StockQuantity > 10)
+                        {
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <span class="stock-text"><strong>In Stock</strong> — @Model.StockQuantity units available</span>
+                        }
+                        else if (Model.StockQuantity > 0)
+                        {
+                            <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                            <span class="stock-text"><strong>Limited Stock</strong> — Only @Model.StockQuantity left</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                            <span class="stock-text"><strong>Out of Stock</strong></span>
+                        }
+                    </div>
+                    
+                    @if (Model.StockQuantity > 0)
+                    {
+                        <!-- Quantity Selector -->
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="qty-label">Quantity</span>
+                            <div class="quantity-selector">
+                                <button type="button" class="qty-btn" onclick="decreaseQty()">−</button>
+                                <input type="number" id="quantityInput" class="qty-input" value="1" min="1" max="@Model.StockQuantity" readonly>
+                                <button type="button" class="qty-btn" onclick="increaseQty()">+</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button type="button" class="btn-add-cart" onclick="addToCart(@Model.ProductId)">
+                                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                            </button>
+                            <button type="button" class="btn-wishlist" onclick="toggleWishlist(@Model.ProductId)" title="Add to Wishlist">
+                                <i class="bi bi-heart fs-5"></i>
+                            </button>
+                            <button type="button" class="btn-compare" onclick="toggleCompare(@Model.ProductId)" title="Add to Compare">
+                                <i class="bi bi-arrow-left-right fs-5"></i>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary btn-lg w-100" disabled>
+                            <i class="bi bi-x-circle me-2"></i>Out of Stock
+                        </button>
+                    }
+                    
+                    <!-- Quick Info -->
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="info-card">
+                                <i class="bi bi-truck fs-4 text-primary"></i>
+                                <div class="mt-2">
+                                    <strong>Free Shipping</strong>
+                                    <p class="mb-0 small text-muted">Orders over $100</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="info-card">
+                                <i class="bi bi-arrow-repeat fs-4 text-primary"></i>
+                                <div class="mt-2">
+                                    <strong>30-Day Returns</strong>
+                                    <p class="mb-0 small text-muted">Easy return policy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Tabs -->
+        <div class="product-tabs">
+            <ul class="nav nav-tabs" id="productTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">
+                        <i class="bi bi-file-text me-2"></i>Description
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features" type="button">
+                        <i class="bi bi-list-check me-2"></i>Features
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                        <i class="bi bi-star me-2"></i>Reviews (@reviewCount)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button">
+                        <i class="bi bi-box-seam me-2"></i>Shipping
+                    </button>
+                </li>
             </ul>
-            <hr>
-            <h4>Shipping Information</h4>
-            <p><i class="fas fa-truck me-2"></i>Free shipping on orders over $100</p>
-            <p><i class="fas fa-box me-2"></i>30-day return policy</p>
-        </div>
-    </div>
-
-    <div class="row mt-5">
-        <div class="col-md-8">
-            <h3>Product Description</h3>
-            <p>@Html.Raw(Model.Description)</p>
-        </div>
-        <div class="col-md-4">
-            <h3>Customer Reviews</h3>
-            <!-- Add a review system here if available -->
-            <p>Coming soon!</p>
-        </div>
-    </div>
-
-    <div class="row mt-5">
-        <div class="col-12">
-            <h3>Related Products</h3>
-            <!-- Add related products carousel or grid here -->
-            <p>Check out these similar products:</p>
-            <!-- Placeholder for related products -->
+            <div class="tab-content" id="productTabContent">
+                <!-- Description Tab -->
+                <div class="tab-pane fade show active" id="description" role="tabpanel">
+                    <h4 class="mb-3">Product Description</h4>
+                    <p>@Html.Raw(Model.Description)</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                
+                <!-- Features Tab -->
+                <div class="tab-pane fade" id="features" role="tabpanel">
+                    <h4 class="mb-4">Product Features</h4>
+                    <ul class="feature-list">
+                        <li>
+                            <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                            <div>
+                                <strong>Premium Quality</strong>
+                                <p class="mb-0 text-muted small">Made with high-quality, durable materials</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feature-icon"><i class="bi bi-gear"></i></div>
+                            <div>
+                                <strong>Professional Grade</strong>
+                                <p class="mb-0 text-muted small">Designed for both beginners and professionals</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feature-icon"><i class="bi bi-droplet"></i></div>
+                            <div>
+                                <strong>Easy Maintenance</strong>
+                                <p class="mb-0 text-muted small">Simple to clean and maintain</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feature-icon"><i class="bi bi-trophy"></i></div>
+                            <div>
+                                <strong>Warranty Included</strong>
+                                <p class="mb-0 text-muted small">1-year manufacturer warranty</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feature-icon"><i class="bi bi-people"></i></div>
+                            <div>
+                                <strong>All Fitness Levels</strong>
+                                <p class="mb-0 text-muted small">Suitable for all skill levels</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Reviews Tab -->
+                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    <h4 class="mb-4">Customer Reviews</h4>
+                    
+                    <!-- Review Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <h2 class="display-4 fw-bold">@rating</h2>
+                            <div class="stars mb-2">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                            </div>
+                            <p class="text-muted">Based on @reviewCount reviews</p>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="me-2">5★</span>
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                </div>
+                                <span class="text-muted">75%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="me-2">4★</span>
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: 15%"></div>
+                                </div>
+                                <span class="text-muted">15%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="me-2">3★</span>
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: 7%"></div>
+                                </div>
+                                <span class="text-muted">7%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="me-2">2★</span>
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: 2%"></div>
+                                </div>
+                                <span class="text-muted">2%</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">1★</span>
+                                <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                    <div class="progress-bar bg-warning" style="width: 1%"></div>
+                                </div>
+                                <span class="text-muted">1%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Individual Reviews -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div>
+                                <p class="reviewer-name mb-1">John Smith</p>
+                                <div class="stars small">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                            </div>
+                            <span class="review-date">2 days ago</span>
+                        </div>
+                        <p class="mb-0">Excellent product! Exactly what I was looking for. High quality and fast shipping. Highly recommended!</p>
+                    </div>
+                    
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div>
+                                <p class="reviewer-name mb-1">Sarah Johnson</p>
+                                <div class="stars small">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star"></i>
+                                </div>
+                            </div>
+                            <span class="review-date">1 week ago</span>
+                        </div>
+                        <p class="mb-0">Great product for the price. Very satisfied with my purchase. Only minor issue was the packaging, but the product itself is perfect.</p>
+                    </div>
+                </div>
+                
+                <!-- Shipping Tab -->
+                <div class="tab-pane fade" id="shipping" role="tabpanel">
+                    <h4 class="mb-4">Shipping & Delivery Information</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-truck me-2 text-primary"></i>Delivery Options</h5>
+                            <ul class="list-unstyled ms-4">
+                                <li class="mb-2">✓ Standard Shipping (5-7 business days) - $9.99</li>
+                                <li class="mb-2">✓ Express Shipping (2-3 business days) - $19.99</li>
+                                <li class="mb-2">✓ Overnight Shipping (1 business day) - $29.99</li>
+                                <li class="mb-2">✓ <strong>FREE</strong> Standard Shipping on orders over $100</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-arrow-repeat me-2 text-primary"></i>Return Policy</h5>
+                            <ul class="list-unstyled ms-4">
+                                <li class="mb-2">✓ 30-day return window</li>
+                                <li class="mb-2">✓ Free returns on defective items</li>
+                                <li class="mb-2">✓ Full refund or exchange</li>
+                                <li class="mb-2">✓ Easy return process</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Note:</strong> Shipping times may vary during peak seasons and holidays. You will receive a tracking number once your order ships.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            var carousel = new bootstrap.Carousel(document.getElementById('productCarousel'), {
-                interval: false
+        // Change main image on thumbnail click
+        function changeMainImage(imageUrl, thumbnail) {
+            $('#mainImage').fadeOut(200, function() {
+                $(this).attr('src', imageUrl).fadeIn(200);
             });
-
-            $(document).keydown(function (e) {
-                if (e.keyCode == 37) {
-                    carousel.prev();
-                }
-                else if (e.keyCode == 39) {
-                    carousel.next();
-                }
-            });
-
-            $('#productCarousel').focus();
-
-            // Quantity input validation
-            $('#quantityInput').on('input', function () {
-                var max = parseInt($(this).attr('max'));
-                var value = parseInt($(this).val());
-                if (value > max) {
-                    $(this).val(max);
-                }
-            });
-
-            // Add to cart animation
-            $('#addToCartBtn').click(function (e) {
-                e.preventDefault();
-                var form = $(this).closest('form');
-                $.ajax({
-                    url: form.attr('action'),
-                    type: 'POST',
-                    data: form.serialize(),
-                    success: function (response) {
-                        $('#cartItemCount').text(response.cartItemCount);
-                        $('#addToCartBtn').addClass('btn-success').removeClass('btn-primary');
-                        $('#addToCartBtn').html('<i class="fas fa-check"></i> Added to Cart');
-                        setTimeout(function () {
-                            $('#addToCartBtn').addClass('btn-primary').removeClass('btn-success');
-                            $('#addToCartBtn').html('<i class="fas fa-cart-plus"></i> Add to Cart');
-                        }, 2000);
-                    }
+            $('.thumbnail').removeClass('active');
+            $(thumbnail).addClass('active');
+        }
+        
+        // Quantity controls
+        function increaseQty() {
+            var input = $('#quantityInput');
+            var max = parseInt(input.attr('max'));
+            var current = parseInt(input.val());
+            if (current < max) {
+                input.val(current + 1);
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Maximum Quantity',
+                    text: 'Only ' + max + ' units available in stock',
+                    timer: 2000,
+                    showConfirmButton: false
                 });
+            }
+        }
+        
+        function decreaseQty() {
+            var input = $('#quantityInput');
+            var current = parseInt(input.val());
+            if (current > 1) {
+                input.val(current - 1);
+            }
+        }
+        
+        // Add to cart function
+        function addToCart(productId) {
+            var quantity = parseInt($('#quantityInput').val());
+            
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    quantity: quantity,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    // Update cart count in header
+                    if (response.cartItemCount) {
+                        $('#cartItemCount').text(response.cartItemCount).show();
+                    }
+                    
+                    // Success notification
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Cart!',
+                        text: 'Product successfully added to your cart',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                    
+                    // Button animation
+                    var btn = $('.btn-add-cart');
+                    var originalHtml = btn.html();
+                    btn.html('<i class="bi bi-check-circle me-2"></i>Added!');
+                    btn.css('background', 'linear-gradient(135deg, #28a745 0%, #20c997 100%)');
+                    
+                    setTimeout(function() {
+                        btn.html(originalHtml);
+                        btn.css('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+                    }, 2000);
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to add product to cart. Please try again.',
+                        timer: 2000
+                    });
+                }
             });
+        }
+        
+        // Wishlist toggle
+        function toggleWishlist(productId) {
+            var btn = $('.btn-wishlist');
+            var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            
+            if (wishlist.includes(productId)) {
+                // Remove from wishlist
+                wishlist = wishlist.filter(id => id !== productId);
+                btn.removeClass('active');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Removed from Wishlist',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                // Add to wishlist
+                wishlist.push(productId);
+                btn.addClass('active');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Wishlist!',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+            
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            $(document).trigger('wishlistUpdated');
+        }
+        
+        // Compare toggle
+        function toggleCompare(productId) {
+            var compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+            
+            if (compareList.includes(productId)) {
+                // Remove from compare
+                compareList = compareList.filter(id => id !== productId);
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Removed from Compare',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                // Check if already 4 products
+                if (compareList.length >= 4) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Compare Limit Reached',
+                        text: 'You can compare up to 4 products only',
+                        timer: 2000
+                    });
+                    return;
+                }
+                
+                // Add to compare
+                compareList.push(productId);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Compare!',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+            
+            localStorage.setItem('compareList', JSON.stringify(compareList));
+            $(document).trigger('compareUpdated');
+        }
+        
+        $(document).ready(function() {
+            // Check if product is in wishlist
+            var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            if (wishlist.includes(@Model.ProductId)) {
+                $('.btn-wishlist').addClass('active');
+            }
+            
+            // Keyboard navigation for image gallery
+            $(document).keydown(function(e) {
+                var thumbnails = $('.thumbnail');
+                var activeIndex = thumbnails.index($('.thumbnail.active'));
+                
+                if (e.keyCode === 37 && activeIndex > 0) { // Left arrow
+                    thumbnails.eq(activeIndex - 1).click();
+                } else if (e.keyCode === 39 && activeIndex < thumbnails.length - 1) { // Right arrow
+                    thumbnails.eq(activeIndex + 1).click();
+                }
+            });
+            
+            // Image zoom on hover
+            $('.main-image-container').hover(
+                function() {
+                    $(this).css('cursor', 'zoom-in');
+                },
+                function() {
+                    $(this).css('cursor', 'default');
+                }
+            );
         });
     </script>
 }

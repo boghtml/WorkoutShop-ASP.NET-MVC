@@ -1,36 +1,468 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Order Confirmation";
+    ViewData["Title"] = "Order Confirmation - WorkoutShop";
 }
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-</head>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-success">
-                <div class="card-body text-center">
-                    <i class="fas fa-check-circle text-success fa-5x mb-3"></i>
-                    <h1 class="card-title">Thank You for Your Order!</h1>
-                    <p class="card-text lead">Your order has been placed successfully.</p>
-                    <p class="card-text">We'll send you an email confirmation with order details and tracking information once your order ships.</p>
-                    <hr>
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                        <a asp-area="User" asp-controller="Order" asp-action="Index" class="btn btn-primary btn-lg">
-                            <i class="fas fa-list-ul"></i> View My Orders
-                        </a>
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                            <i class="fas fa-home"></i> Continue Shopping
-                        </a>
-                    </div>
-                </div>
+<style>
+    .confirmation-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated background elements */
+    .confirmation-container::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        top: -200px;
+        right: -200px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .confirmation-container::after {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        bottom: -150px;
+        left: -150px;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(30px, 30px) rotate(180deg); }
+    }
+
+    .confirmation-card {
+        background: white;
+        border-radius: 30px;
+        padding: 60px 40px;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+        position: relative;
+        z-index: 10;
+        animation: slideUp 0.8s ease-out;
+    }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-icon-wrapper {
+        position: relative;
+        margin: 0 auto 30px;
+        width: 140px;
+        height: 140px;
+    }
+
+    .success-icon {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+        box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+    }
+
+    .success-icon i {
+        font-size: 4rem;
+        color: white;
+        animation: checkPop 0.4s ease-out 0.6s both;
+    }
+
+    @@keyframes scaleIn {
+        0% {
+            transform: scale(0) rotate(-180deg);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes checkPop {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .success-rings {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .ring {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        border: 3px solid #4ade80;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: ripple 2s ease-out infinite;
+        opacity: 0;
+    }
+
+    .ring:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+
+    .ring:nth-child(3) {
+        animation-delay: 1s;
+    }
+
+    @@keyframes ripple {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.5;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(2.5);
+            opacity: 0;
+        }
+    }
+
+    .confirmation-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 15px;
+        animation: fadeIn 0.6s ease-out 0.8s both;
+    }
+
+    .confirmation-subtitle {
+        font-size: 1.3rem;
+        color: #4ade80;
+        font-weight: 600;
+        margin-bottom: 20px;
+        animation: fadeIn 0.6s ease-out 1s both;
+    }
+
+    .confirmation-text {
+        color: #6b7280;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 35px;
+        animation: fadeIn 0.6s ease-out 1.2s both;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .info-boxes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin: 35px 0;
+        animation: fadeIn 0.6s ease-out 1.4s both;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .info-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .info-box i {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .info-box-title {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .info-box-value {
+        font-size: 1.1rem;
+        color: #1f2937;
+        font-weight: 700;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+        animation: fadeIn 0.6s ease-out 1.6s both;
+    }
+
+    .btn-primary-custom {
+        flex: 1;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 16px 30px;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        flex: 1;
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+        padding: 16px 30px;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    }
+
+    .divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, #e5e7eb 50%, transparent 100%);
+        margin: 35px 0;
+    }
+
+    .features {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        animation: fadeIn 0.6s ease-out 1.8s both;
+    }
+
+    .feature {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+    .feature i {
+        color: #4ade80;
+        font-size: 1.2rem;
+    }
+
+    /* Confetti animation */
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #4ade80;
+        position: absolute;
+        animation: confettiFall 3s ease-out forwards;
+    }
+
+    @@keyframes confettiFall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .confirmation-card {
+            padding: 40px 25px;
+        }
+
+        .confirmation-title {
+            font-size: 2rem;
+        }
+
+        .info-boxes {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .features {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="success-icon-wrapper">
+            <div class="success-rings">
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+            </div>
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
+
+        <h1 class="confirmation-title text-center">Order Confirmed!</h1>
+        <p class="confirmation-subtitle text-center">Thank You for Your Purchase</p>
+        
+        <p class="confirmation-text text-center">
+            Your order has been successfully placed and is being processed. 
+            We've sent a confirmation email with your order details and tracking information.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="info-boxes">
+            <div class="info-box">
+                <i class="fas fa-box"></i>
+                <div class="info-box-title">Order Status</div>
+                <div class="info-box-value">Processing</div>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-shipping-fast"></i>
+                <div class="info-box-title">Estimated Delivery</div>
+                <div class="info-box-value">3-5 Days</div>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-envelope"></i>
+                <div class="info-box-title">Email Sent</div>
+                <div class="info-box-value">Confirmation</div>
+            </div>
+            <div class="info-box">
+                <i class="fas fa-headset"></i>
+                <div class="info-box-title">Support</div>
+                <div class="info-box-value">24/7 Available</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a asp-area="User" asp-controller="Order" asp-action="Index" class="btn-primary-custom">
+                <i class="fas fa-list-ul"></i>
+                <span>View Orders</span>
+            </a>
+            <a asp-controller="Home" asp-action="Index" asp-area="" class="btn-secondary-custom">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Continue Shopping</span>
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure Payment</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-truck"></i>
+                <span>Free Shipping</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-undo-alt"></i>
+                <span>Easy Returns</span>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Create confetti effect
+    function createConfetti() {
+        const colors = ['#4ade80', '#667eea', '#764ba2', '#fbbf24', '#f87171'];
+        const container = document.querySelector('.confirmation-container');
+        
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }, i * 30);
+        }
+    }
+
+    // Trigger confetti on page load
+    window.addEventListener('load', () => {
+        setTimeout(createConfetti, 600);
+    });
+</script>

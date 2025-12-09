@@ -1,0 +1,280 @@
+@{
+    ViewData["Title"] = "Compare Products";
+}
+
+<div class="compare-page">
+    <!-- Hero Section -->
+    <section class="hero-section text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-2">
+                <i class="bi bi-arrow-left-right me-2"></i>Compare Products
+            </h1>
+            <p class="lead mb-0">Compare up to 4 products side by side</p>
+        </div>
+    </section>
+
+    <div class="container mt-4">
+        <!-- Empty State -->
+        <div id="emptyCompare" class="text-center py-5" style="display: none;">
+            <div class="mb-4">
+                <i class="bi bi-arrow-left-right display-1 text-muted"></i>
+            </div>
+            <h3 class="fw-bold mb-3">No Products to Compare</h3>
+            <p class="text-muted mb-4">
+                Add products to your compare list to see them here!<br>
+                You can compare up to 4 products at a time.
+            </p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                <i class="bi bi-shop me-2"></i>Browse Products
+            </a>
+        </div>
+
+        <!-- Compare Table -->
+        <div id="compareSection" style="display: none;">
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Comparing <span id="compareCount">0</span> Products</h4>
+                <button class="btn btn-outline-danger" id="clearCompare">
+                    <i class="bi bi-trash me-2"></i>Clear All
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered bg-white shadow-sm">
+                    <tbody id="compareTableBody">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadCompareProducts();
+
+            function loadCompareProducts() {
+                var compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+                
+                if (compareList.length === 0) {
+                    $('#emptyCompare').show();
+                    $('#compareSection').hide();
+                    return;
+                }
+
+                $('#emptyCompare').hide();
+                $('#compareSection').show();
+                $('#compareCount').text(compareList.length);
+
+                var products = [];
+                var loadedCount = 0;
+
+                compareList.forEach(function(productId) {
+                    $.get('@Url.Action("QuickView", "Home")/' + productId, function(data) {
+                        var $data = $(data);
+                        
+                        products.push({
+                            id: productId,
+                            name: $data.find('h3').text(),
+                            price: $data.find('h2.text-primary').text(),
+                            category: $data.find('.badge.bg-light').text().trim(),
+                            imageUrl: $data.find('#quickViewMainImage').attr('src'),
+                            description: $data.find('.mb-4 p.text-muted').first().text(),
+                            rating: $data.find('.text-warning').html(),
+                            stockStatus: $data.find('.text-success, .text-danger').text().trim(),
+                            isInStock: $data.find('.text-success').length > 0
+                        });
+
+                        loadedCount++;
+                        if (loadedCount === compareList.length) {
+                            renderCompareTable(products);
+                        }
+                    });
+                });
+            }
+
+            function renderCompareTable(products) {
+                var html = '';
+
+                // Product Images Row
+                html += '<tr class="bg-light"><th class="fw-bold" style="width: 150px;">Product</th>';
+                products.forEach(function(product) {
+                    html += `
+                        <td class="text-center position-relative">
+                            <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 remove-from-compare" data-product-id="${product.id}">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                            <img src="${product.imageUrl}" alt="${product.name}" class="img-fluid rounded mb-2" style="max-height: 200px; object-fit: contain;">
+                            <h6 class="fw-bold">${product.name}</h6>
+                        </td>
+                    `;
+                });
+                html += '</tr>';
+
+                // Category Row
+                html += '<tr><th class="fw-bold">Category</th>';
+                products.forEach(function(product) {
+                    html += `<td><span class="badge bg-light text-primary border border-primary">${product.category}</span></td>`;
+                });
+                html += '</tr>';
+
+                // Price Row
+                html += '<tr><th class="fw-bold">Price</th>';
+                products.forEach(function(product) {
+                    html += `<td><h5 class="text-primary mb-0">${product.price}</h5></td>`;
+                });
+                html += '</tr>';
+
+                // Rating Row
+                html += '<tr><th class="fw-bold">Rating</th>';
+                products.forEach(function(product) {
+                    html += `<td>${product.rating}</td>`;
+                });
+                html += '</tr>';
+
+                // Stock Status Row
+                html += '<tr><th class="fw-bold">Availability</th>';
+                products.forEach(function(product) {
+                    html += `<td><span class="badge ${product.isInStock ? 'bg-success' : 'bg-danger'}">${product.stockStatus}</span></td>`;
+                });
+                html += '</tr>';
+
+                // Description Row
+                html += '<tr><th class="fw-bold">Description</th>';
+                products.forEach(function(product) {
+                    html += `<td><p class="small text-muted">${product.description.substring(0, 150)}...</p></td>`;
+                });
+                html += '</tr>';
+
+                // Action Buttons Row
+                html += '<tr><th class="fw-bold">Actions</th>';
+                products.forEach(function(product) {
+                    html += `
+                        <td>
+                            <div class="d-grid gap-2">
+                                ${product.isInStock ? `
+                                    <button class="btn btn-primary btn-sm add-to-cart-from-compare" data-product-id="${product.id}">
+                                        <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-secondary btn-sm" disabled>
+                                        Out of Stock
+                                    </button>
+                                `}
+                                <a href="@Url.Action("Details", "Home")/${product.id}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-2"></i>View Details
+                                </a>
+                            </div>
+                        </td>
+                    `;
+                });
+                html += '</tr>';
+
+                $('#compareTableBody').html(html);
+            }
+
+            // Remove from compare
+            $(document).on('click', '.remove-from-compare', function() {
+                var productId = $(this).data('product-id');
+                var compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+                compareList = compareList.filter(id => id !== productId);
+                localStorage.setItem('compareList', JSON.stringify(compareList));
+                
+                loadCompareProducts();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed',
+                    text: 'Product removed from compare',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            });
+
+            // Clear all
+            $('#clearCompare').click(function() {
+                Swal.fire({
+                    title: 'Clear Compare List?',
+                    text: 'Are you sure you want to remove all products from compare?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, clear all',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        localStorage.removeItem('compareList');
+                        loadCompareProducts();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cleared',
+                            text: 'All products removed from compare',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
+                });
+            });
+
+            // Add to cart from compare
+            $(document).on('click', '.add-to-cart-from-compare', function() {
+                var $btn = $(this);
+                var productId = $btn.data('product-id');
+                var originalHtml = $btn.html();
+                
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
+                
+                $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: 1 }, function(response) {
+                    $('#cartItemCount').text(response.cartItemCount);
+                    $btn.html('<i class="bi bi-check-circle me-2"></i>Added!');
+                    
+                    setTimeout(function() {
+                        $btn.html(originalHtml).prop('disabled', false);
+                    }, 2000);
+                    
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product added to cart',
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }).fail(function() {
+                    $btn.html(originalHtml).prop('disabled', false);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to add product to cart'
+                    });
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        vertical-align: middle;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .table img:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+</style>

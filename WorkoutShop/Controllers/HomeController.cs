@@ -45,6 +45,37 @@ namespace WorkoutShop.Controllers
             return View();
         }
 
+        public IActionResult About()
+        {
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        public IActionResult Wishlist()
+        {
+            return View();
+        }
+
+        public IActionResult Compare()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> QuickView(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_QuickViewPartial", product);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

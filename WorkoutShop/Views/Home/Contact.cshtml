@@ -1,0 +1,321 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="contact-page">
+    <!-- Hero Section -->
+    <section class="hero-section text-white text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-3">Get In Touch</h1>
+            <p class="lead mb-0">We'd love to hear from you. Reach out to us anytime!</p>
+        </div>
+    </section>
+
+    <!-- Contact Info & Form Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Contact Information -->
+                <div class="col-lg-4">
+                    <div class="mb-4">
+                        <h3 class="fw-bold mb-4">Contact Information</h3>
+                        <p class="text-muted">
+                            Have questions? We're here to help! Get in touch with our team and we'll respond as soon as possible.
+                        </p>
+                    </div>
+
+                    <!-- Contact Cards -->
+                    <div class="mb-4">
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                            <i class="bi bi-geo-alt-fill text-primary fs-4"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="fw-bold mb-2">Visit Us</h5>
+                                        <p class="text-muted mb-0 small">
+                                            123 Fitness Street<br>
+                                            Workout District<br>
+                                            Kyiv, Ukraine 01001
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                            <i class="bi bi-telephone-fill text-primary fs-4"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="fw-bold mb-2">Call Us</h5>
+                                        <p class="text-muted mb-1 small">+380 (44) 123-4567</p>
+                                        <p class="text-muted mb-0 small">Mon-Fri: 9AM - 6PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                            <i class="bi bi-envelope-fill text-primary fs-4"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="fw-bold mb-2">Email Us</h5>
+                                        <p class="text-muted mb-1 small">info@workoutshop.com</p>
+                                        <p class="text-muted mb-0 small">support@workoutshop.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                            <i class="bi bi-clock-fill text-primary fs-4"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="fw-bold mb-2">Business Hours</h5>
+                                        <p class="text-muted mb-1 small">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                        <p class="text-muted mb-1 small">Saturday: 10:00 AM - 4:00 PM</p>
+                                        <p class="text-muted mb-0 small">Sunday: Closed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media -->
+                    <div>
+                        <h5 class="fw-bold mb-3">Follow Us</h5>
+                        <div class="d-flex gap-2">
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-facebook fs-5"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-instagram fs-5"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-twitter fs-5"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-primary rounded-circle" style="width: 45px; height: 45px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-youtube fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 p-md-5">
+                            <h3 class="fw-bold mb-4">Send Us a Message</h3>
+                            <form id="contactForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="subject" class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="subject" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="message" class="form-label fw-semibold">Message <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="message" rows="6" required></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="newsletter">
+                                            <label class="form-check-label" for="newsletter">
+                                                I'd like to receive news and updates about WorkoutShop
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="bi bi-send me-2"></i>Send Message
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="text-center fw-bold mb-5">Frequently Asked Questions</h2>
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item border-0 shadow-sm mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <strong>What are your shipping times?</strong>
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    We typically process and ship orders within 1-2 business days. Standard shipping takes 3-5 business days, 
+                                    while express shipping delivers in 1-2 business days.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item border-0 shadow-sm mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <strong>Do you offer international shipping?</strong>
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Yes! We ship to most countries worldwide. International shipping times vary by destination, 
+                                    typically 7-14 business days. Additional customs fees may apply.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item border-0 shadow-sm mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <strong>What is your return policy?</strong>
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    We offer a 30-day return policy on most items. Products must be unused and in original packaging. 
+                                    Contact our support team to initiate a return.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item border-0 shadow-sm mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <strong>Do you have a physical store?</strong>
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Yes, you can visit our showroom at 123 Fitness Street, Workout District, Kyiv. 
+                                    We recommend calling ahead to ensure product availability.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item border-0 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    <strong>How can I track my order?</strong>
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    Once your order ships, you'll receive a tracking number via email. You can also track your order 
+                                    by logging into your account and viewing your order history.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section (Optional) -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-4">Find Us Here</h2>
+            <div class="ratio ratio-21x9 rounded-3 overflow-hidden shadow">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3346.4108109214926!2d26.95783937716219!3d49.40883877141213!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4732068f357093b7%3A0xc4c40e1a0d42c702!2z0KXQvNC10LvRjNC90LjRhtGM0LrQuNC5INC90LDRhtGW0L7QvdCw0LvRjNC90LjQuSDRg9C90ZbQstC10YDRgdC40YLQtdGC!5e1!3m2!1suk!2sua!4v1765303495019!5m2!1suk!2sua" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .contact-page .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .contact-page .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    }
+    
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.3;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #667eea;
+    }
+    
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
+    }
+</style>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Here you would typically send the form data to your server
+        // For now, we'll just show a success message
+        
+        alert('Thank you for your message! We\'ll get back to you as soon as possible.');
+        this.reset();
+    });
+</script>
