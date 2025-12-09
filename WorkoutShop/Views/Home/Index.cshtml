@@ -4,110 +4,366 @@
 }
 <link rel="stylesheet" href="~/css/custom.css" />
 
+<!-- Hero Banner -->
+<div class="hero-banner text-white text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-top: -20px;">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="bi bi-lightning-charge-fill"></i> Premium Workout Equipment
+        </h1>
+        <p class="lead mb-4">Transform your fitness journey with our professional-grade equipment</p>
+        
+        <!-- Quick Search Bar -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form asp-action="Index" method="get" class="search-form">
+                    <div class="input-group input-group-lg shadow-lg">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="bi bi-search text-primary"></i>
+                        </span>
+                        <input type="text" name="searchTerm" id="searchTermTop" class="form-control border-0" 
+                               placeholder="Search for dumbbells, treadmills, supplements..." 
+                               value="@Context.Request.Query["searchTerm"]">
+                        <button class="btn btn-light px-4" type="submit">
+                            <i class="bi bi-search me-2"></i>Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid mt-4">
     <div class="row">
-        <!-- Sidebar for filters -->
-        <div class="col-md-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Filters</h5>
+        <!-- Advanced Sidebar Filters -->
+        <div class="col-lg-3 col-md-4">
+            <div class="filters-sidebar sticky-top" style="top: 20px;">
+                <!-- Filter Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-funnel-fill text-primary me-2"></i>Filters
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none" id="clearFilters">
+                        <i class="bi bi-x-circle"></i> Clear All
+                    </button>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Index" method="get">
-                        <div class="mb-3">
-                            <label for="category" class="form-label">Category</label>
-                            <select name="category" id="category" class="form-select">
+
+                <form asp-action="Index" method="get" id="filterForm">
+                    <!-- Search Input -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-semibold mb-2">
+                                <i class="bi bi-search text-primary me-2"></i>Search Products
+                            </label>
+                            <div class="input-group">
+                                <input type="text" name="searchTerm" id="searchTerm" class="form-control" 
+                                       placeholder="Product name..." 
+                                       value="@Context.Request.Query["searchTerm"]">
+                                <button class="btn btn-outline-primary" type="button" id="searchBtn">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-semibold mb-3">
+                                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Category
+                            </label>
+                            <select name="categoryId" id="category" class="form-select form-select-lg">
                                 <option value="">All Categories</option>
                                 @foreach (var cat in Model.Select(p => p.Category).Distinct())
                                 {
-                                    <option value="@cat.Name">@cat.Name</option>
+                                    <option value="@cat.CategoryId" selected="@(Context.Request.Query["categoryId"] == cat.CategoryId.ToString())">
+                                        @cat.Name
+                                    </option>
                                 }
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="sortOrder" class="form-label">Sort By</label>
-                            <select name="sortOrder" id="sortOrder" class="form-select">
-                                <option value="price_asc">Price: Low to High</option>
-                                <option value="price_desc">Price: High to Low</option>
-                                <option value="popularity">Popularity</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="priceRange" class="form-label">Price Range</label>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="number" name="minPrice" id="minPrice" class="form-control" placeholder="Min" step="0.01" />
+                    </div>
+
+                    <!-- Price Range Filter -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-semibold mb-3">
+                                <i class="bi bi-currency-dollar text-primary me-2"></i>Price Range
+                            </label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" name="minPrice" id="minPrice" 
+                                               class="form-control" placeholder="Min" step="0.01" 
+                                               value="@Context.Request.Query["minPrice"]">
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    <input type="number" name="maxPrice" id="maxPrice" class="form-control" placeholder="Max" step="0.01" />
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" name="maxPrice" id="maxPrice" 
+                                               class="form-control" placeholder="Max" step="0.01" 
+                                               value="@Context.Request.Query["maxPrice"]">
+                                    </div>
                                 </div>
                             </div>
+                            <div class="price-range-display text-center text-muted small mt-2">
+                                <span id="priceRangeText">Any Price</span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="searchTerm" class="form-label">Search</label>
-                            <input type="text" name="searchTerm" id="searchTerm" class="form-control" placeholder="Search products..." />
+                    </div>
+
+                    <!-- Sort Order -->
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-semibold mb-3">
+                                <i class="bi bi-sort-down text-primary me-2"></i>Sort By
+                            </label>
+                            <select name="sortOrder" id="sortOrder" class="form-select form-select-lg">
+                                <option value="">Featured</option>
+                                <option value="price_asc" selected="@(Context.Request.Query["sortOrder"] == "price_asc")">
+                                    <i class="bi bi-arrow-up"></i> Price: Low to High
+                                </option>
+                                <option value="price_desc" selected="@(Context.Request.Query["sortOrder"] == "price_desc")">
+                                    <i class="bi bi-arrow-down"></i> Price: High to Low
+                                </option>
+                                <option value="popularity" selected="@(Context.Request.Query["sortOrder"] == "popularity")">
+                                    <i class="bi bi-star-fill"></i> Popularity
+                                </option>
+                                <option value="newest" selected="@(Context.Request.Query["sortOrder"] == "newest")">
+                                    <i class="bi bi-clock"></i> Newest First
+                                </option>
+                            </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                            <i class="bi bi-check-circle me-2"></i>Apply Filters
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="resetFilters">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Active Filters Display -->
+                <div id="activeFilters" class="mt-3"></div>
             </div>
         </div>
 
-        <!-- Main content area -->
-        <div class="col-md-9">
-            <h1 class="mb-4">Workout Equipment</h1>
+        <!-- Main Products Area -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Results Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">
+                        @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
+                        {
+                            <span>Search Results for "@Context.Request.Query["searchTerm"]"</span>
+                        }
+                        else
+                        {
+                            <span>All Products</span>
+                        }
+                    </h2>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-box-seam me-1"></i>
+                        @(Model?.Count() ?? 0) products found
+                    </p>
+                </div>
+                
+                <!-- View Toggle -->
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active" id="gridView">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="listView">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                </div>
+            </div>
 
             @if (Model != null && Model.Any())
             {
-                <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="productsGrid">
                     @foreach (var product in Model)
                     {
-                        <div class="col">
-                            <div class="card h-100 shadow-sm product-card">
-                                <div class="position-relative">
+                        var randomRating = new Random(product.ProductId).Next(35, 50) / 10.0;
+                        var reviewCount = new Random(product.ProductId + 1000).Next(5, 150);
+                        var isNew = product.ProductId % 4 == 0;
+                        var isBestSeller = product.ProductId % 3 == 0;
+                        
+                        <div class="col product-item">
+                            <div class="card h-100 border-0 shadow-sm product-card" data-product-id="@product.ProductId">
+                                <div class="position-relative product-image-wrapper">
                                     @if (product.ProductImages != null && product.ProductImages.Any())
                                     {
                                         var primaryImageUrl = product.ProductImages.FirstOrDefault(i => i.IsPrimary)?.ImageUrl ?? product.ProductImages.First().ImageUrl;
                                         <a asp-action="Details" asp-route-id="@product.ProductId">
-                                            <img src="@primaryImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                                            <img src="@primaryImageUrl" class="card-img-top product-image" alt="@product.Name" style="height: 250px; object-fit: cover;">
                                         </a>
                                     }
                                     else
                                     {
-                                        <img src="~/images/no-image.png" class="card-img-top" alt="No Image" style="height: 200px; object-fit: cover;">
+                                        <img src="~/images/no-image.png" class="card-img-top product-image" alt="No Image" style="height: 250px; object-fit: cover;">
                                     }
-                                    @if (product.StockQuantity <= 5 && product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-warning position-absolute top-0 end-0 m-2">Limited Stock</span>
-                                    }
-                                    @if (product.StockQuantity == 0)
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">Sold Out</span>
-                                    }
+                                    
+                                    <!-- Badges -->
+                                    <div class="position-absolute top-0 start-0 m-2">
+                                        @if (isNew)
+                                        {
+                                            <span class="badge bg-success mb-1 d-block">
+                                                <i class="bi bi-stars me-1"></i>New
+                                            </span>
+                                        }
+                                        @if (isBestSeller)
+                                        {
+                                            <span class="badge bg-warning text-dark mb-1 d-block">
+                                                <i class="bi bi-fire me-1"></i>Best Seller
+                                            </span>
+                                        }
+                                    </div>
+                                    
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        @if (product.StockQuantity <= 5 && product.StockQuantity > 0)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>Only @product.StockQuantity left
+                                            </span>
+                                        }
+                                        @if (product.StockQuantity == 0)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle me-1"></i>Sold Out
+                                            </span>
+                                        }
+                                    </div>
+                                    
+                                    <!-- Quick Action Buttons Overlay -->
+                                    <div class="product-overlay">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <button class="btn btn-light btn-sm rounded-circle quick-view-btn" 
+                                                    data-product-id="@product.ProductId"
+                                                    data-bs-toggle="tooltip" title="Quick View">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-light btn-sm rounded-circle wishlist-btn" 
+                                                    data-product-id="@product.ProductId"
+                                                    data-bs-toggle="tooltip" title="Add to Wishlist">
+                                                <i class="bi bi-heart"></i>
+                                            </button>
+                                            <button class="btn btn-light btn-sm rounded-circle compare-btn" 
+                                                    data-product-id="@product.ProductId"
+                                                    data-bs-toggle="tooltip" title="Add to Compare">
+                                                <i class="bi bi-arrow-left-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
+                                
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">@product.Name</h5>
-                                    <p class="card-text flex-grow-1">
+                                    <!-- Category Badge -->
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-primary border border-primary">
+                                            <i class="bi bi-tag me-1"></i>@product.Category.Name
+                                        </span>
+                                    </div>
+                                    
+                                    <h5 class="card-title">
+                                        <a asp-action="Details" asp-route-id="@product.ProductId" 
+                                           class="text-decoration-none text-dark">
+                                            @product.Name
+                                        </a>
+                                    </h5>
+                                    
+                                    <!-- Rating -->
+                                    <div class="mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="text-warning me-2">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= Math.Floor(randomRating))
+                                                    {
+                                                        <i class="bi bi-star-fill"></i>
+                                                    }
+                                                    else if (i <= Math.Ceiling(randomRating))
+                                                    {
+                                                        <i class="bi bi-star-half"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-star"></i>
+                                                    }
+                                                }
+                                            </div>
+                                            <small class="text-muted">
+                                                (@randomRating.ToString("F1")) • @reviewCount reviews
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="card-text flex-grow-1 text-muted small">
                                         @if (!string.IsNullOrEmpty(product.Description))
                                         {
-                                            @(product.Description.Length > 100 ? product.Description.Substring(0, 97) + "..." : product.Description)
+                                            @(product.Description.Length > 80 ? product.Description.Substring(0, 77) + "..." : product.Description)
                                         }
                                         else
                                         {
                                             @:"No description available."
                                         }
                                     </p>
-                                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="h5 mb-0 text-primary">@product.Price.ToString("C")</span>
+                                    
+                                    <!-- Stock Status Bar -->
+                                    @if (product.StockQuantity > 0 && product.StockQuantity <= 20)
+                                    {
+                                        var stockPercentage = (product.StockQuantity / 20.0) * 100;
+                                        <div class="mb-3">
+                                            <small class="text-muted d-block mb-1">
+                                                <i class="bi bi-box-seam me-1"></i>
+                                                Availability: <span class="@(product.StockQuantity <= 5 ? "text-danger" : "text-success") fw-semibold">
+                                                    @(product.StockQuantity <= 5 ? "Low Stock" : "In Stock")
+                                                </span>
+                                            </small>
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar @(product.StockQuantity <= 5 ? "bg-danger" : "bg-success")" 
+                                                     role="progressbar" 
+                                                     style="width: @stockPercentage%"></div>
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                                <div class="h4 mb-0 text-primary fw-bold">@product.Price.ToString("C")</div>
+                                                <small class="text-muted text-decoration-line-through">@((product.Price * 1.2m).ToString("C"))</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <small class="text-success fw-semibold">
+                                                    <i class="bi bi-check-circle me-1"></i>Free Shipping
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
                                         @if (product.StockQuantity > 0)
                                         {
-                                            <button class="btn btn-sm btn-outline-primary add-to-cart" data-product-id="@product.ProductId">
-                                                <i class="fas fa-cart-plus"></i> Add to Cart
-                                            </button>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-primary add-to-cart-quick" data-product-id="@product.ProductId">
+                                                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                                </button>
+                                                <button class="btn btn-outline-primary btn-sm quick-view-btn" data-product-id="@product.ProductId">
+                                                    <i class="bi bi-eye me-2"></i>Quick View
+                                                </button>
+                                            </div>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-danger">Out of Stock</span>
+                                            <button class="btn btn-secondary disabled w-100" disabled>
+                                                <i class="bi bi-x-circle me-2"></i>Out of Stock
+                                            </button>
                                         }
                                     </div>
                                 </div>
@@ -118,31 +374,185 @@
             }
             else
             {
-                <div class="alert alert-info text-center" role="alert">
-                    <h4 class="alert-heading">No products available</h4>
-                    <p>We're currently restocking our inventory. Please check back soon!</p>
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">No Products Found</h3>
+                    <p class="text-muted mb-4">
+                        We couldn't find any products matching your criteria.<br>
+                        Try adjusting your filters or search terms.
+                    </p>
+                    <button type="button" class="btn btn-primary" id="clearAllFilters">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Clear Filters
+                    </button>
                 </div>
             }
         </div>
     </div>
-
-    <br></br>
 </div>
+
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="quickViewModalLabel">Product Quick View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wishlist Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="wishlistToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="bi bi-heart-fill me-2"></i>
+            <strong class="me-auto">Wishlist</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="wishlistToastBody">
+            Product added to wishlist!
+        </div>
+    </div>
+</div>
+
+<!-- Compare Toast -->
+<div class="position-fixed bottom-0 start-0 p-3" style="z-index: 11">
+    <div id="compareToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-info text-white">
+            <i class="bi bi-arrow-left-right me-2"></i>
+            <strong class="me-auto">Compare</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="compareToastBody">
+            Product added to compare list!
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-banner {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+    }
+    
+    .search-form .input-group {
+        border-radius: 50px;
+        overflow: hidden;
+        background: white;
+    }
+    
+    .search-form .form-control {
+        padding: 15px 20px;
+    }
+    
+    .search-form .form-control:focus {
+        box-shadow: none;
+    }
+    
+    .filters-sidebar .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .filters-sidebar .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+    
+    .filters-sidebar .form-control:focus,
+    .filters-sidebar .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+    }
+    
+    .product-card img {
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover img {
+        transform: scale(1.05);
+    }
+    
+    .btn-group .btn.active {
+        background-color: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+    
+    #productsGrid.list-view .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    #productsGrid.list-view .card {
+        flex-direction: row;
+    }
+    
+    #productsGrid.list-view .card img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .price-range-display {
+        padding: 8px;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+</style>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Add to Cart
             $('.add-to-cart').click(function () {
                 var productId = $(this).data('product-id');
-                // AJAX call to add the item to the cart
                 $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: 1 }, function (response) {
-                    // Update cart UI
                     $('#cartItemCount').text(response.cartItemCount);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Product added to cart',
                         icon: 'success',
-                        confirmButtonText: 'Continue Shopping'
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
                     });
                 }).fail(function () {
                     Swal.fire({
@@ -154,22 +564,107 @@
                 });
             });
 
-            // Price range slider
-            $("#priceRange").slider({
-                range: true,
-                min: 0,
-                max: 1000,
-                values: [0, 1000],
-                slide: function (event, ui) {
-                    $("#minPrice").val(ui.values[0]);
-                    $("#maxPrice").val(ui.values[1]);
+            // Price range display update
+            function updatePriceRangeDisplay() {
+                var min = $('#minPrice').val();
+                var max = $('#maxPrice').val();
+                var text = 'Any Price';
+                
+                if (min && max) {
+                    text = '$' + min + ' - $' + max;
+                } else if (min) {
+                    text = 'From $' + min;
+                } else if (max) {
+                    text = 'Up to $' + max;
+                }
+                
+                $('#priceRangeText').text(text);
+            }
+            
+            $('#minPrice, #maxPrice').on('input', updatePriceRangeDisplay);
+            updatePriceRangeDisplay();
+
+            // Search button functionality
+            $('#searchBtn').click(function() {
+                $('#filterForm').submit();
+            });
+            
+            // Quick search on top
+            $('#searchTermTop').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#searchTerm').val($(this).val());
                 }
             });
 
-            // Update slider when inputs change
-            $("#minPrice, #maxPrice").on("input", function () {
-                $("#priceRange").slider("values", [$("#minPrice").val(), $("#maxPrice").val()]);
+            // Clear all filters
+            $('#clearFilters, #clearAllFilters, #resetFilters').click(function () {
+                $('#searchTerm, #searchTermTop').val('');
+                $('#category').val('');
+                $('#sortOrder').val('');
+                $('#minPrice, #maxPrice').val('');
+                updatePriceRangeDisplay();
+                window.location.href = '@Url.Action("Index", "Home")';
             });
+
+            // View toggle (Grid/List)
+            $('#gridView').click(function() {
+                $('#productsGrid').removeClass('list-view');
+                $(this).addClass('active');
+                $('#listView').removeClass('active');
+                localStorage.setItem('viewMode', 'grid');
+            });
+            
+            $('#listView').click(function() {
+                $('#productsGrid').addClass('list-view');
+                $(this).addClass('active');
+                $('#gridView').removeClass('active');
+                localStorage.setItem('viewMode', 'list');
+            });
+            
+            // Restore view mode from localStorage
+            var viewMode = localStorage.getItem('viewMode');
+            if (viewMode === 'list') {
+                $('#listView').click();
+            }
+
+            // Auto-submit on filter change (optional)
+            $('#category, #sortOrder').change(function() {
+                // Uncomment to auto-submit on change
+                // $('#filterForm').submit();
+            });
+
+            // Show active filters
+            function displayActiveFilters() {
+                var activeFilters = [];
+                var searchTerm = $('#searchTerm').val();
+                var category = $('#category option:selected').text();
+                var sortOrder = $('#sortOrder option:selected').text();
+                var minPrice = $('#minPrice').val();
+                var maxPrice = $('#maxPrice').val();
+                
+                if (searchTerm) activeFilters.push({ label: 'Search', value: searchTerm });
+                if ($('#category').val()) activeFilters.push({ label: 'Category', value: category });
+                if ($('#sortOrder').val()) activeFilters.push({ label: 'Sort', value: sortOrder });
+                if (minPrice || maxPrice) {
+                    var priceText = minPrice && maxPrice ? `$${minPrice} - $${maxPrice}` : 
+                                    minPrice ? `From $${minPrice}` : `Up to $${maxPrice}`;
+                    activeFilters.push({ label: 'Price', value: priceText });
+                }
+                
+                var html = '';
+                if (activeFilters.length > 0) {
+                    html = '<div class="card border-0 bg-light"><div class="card-body p-3">';
+                    html += '<small class="text-muted fw-semibold d-block mb-2">Active Filters:</small>';
+                    activeFilters.forEach(function(filter) {
+                        html += `<span class="badge bg-primary me-2 mb-2">${filter.label}: ${filter.value}</span>`;
+                    });
+                    html += '</div></div>';
+                }
+                
+                $('#activeFilters').html(html);
+            }
+            
+            displayActiveFilters();
         });
     </script>
 }
