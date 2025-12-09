@@ -29,6 +29,10 @@ namespace WorkoutShop.Repositories.ShoppingCartRepository
             return await _context.ShoppingCarts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.ProductImages)
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.Category)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
@@ -36,6 +40,9 @@ namespace WorkoutShop.Repositories.ShoppingCartRepository
         {
             return await _context.CartItems
                 .Include(ci => ci.Product)
+                    .ThenInclude(p => p.ProductImages)
+                .Include(ci => ci.Product)
+                    .ThenInclude(p => p.Category)
                 .FirstOrDefaultAsync(ci => ci.CartItemId == cartItemId);
         }
 

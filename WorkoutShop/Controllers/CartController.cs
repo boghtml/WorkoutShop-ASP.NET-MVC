@@ -36,17 +36,35 @@ namespace WorkoutShop.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(int cartItemId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _cartService.RemoveFromCartAsync(userId, cartItemId);
-            return RedirectToAction("Index");
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                await _cartService.RemoveFromCartAsync(userId, cartItemId);
+                
+                var cart = await _cartService.GetCartByUserIdAsync(userId);
+                var itemCount = cart?.CartItems?.Count ?? 0;
+                
+                return Json(new { success = true, itemCount = itemCount });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateCartItem(int cartItemId, int quantity)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _cartService.UpdateCartItemQuantityAsync(userId, cartItemId, quantity);
-            return RedirectToAction("Index");
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                await _cartService.UpdateCartItemQuantityAsync(userId, cartItemId, quantity);
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
         }
     }
 }

@@ -1,53 +1,649 @@
 ﻿@model WorkoutShop.Models.ShoppingCart
 
 @{
-    ViewData["Title"] = "Your Shopping Cart";
+    ViewData["Title"] = "Shopping Cart";
+    var subtotal = Model?.CartItems?.Sum(ci => ci.Product.Price * ci.Quantity) ?? 0;
+    var shipping = subtotal > 100 ? 0 : 9.99m;
+    var tax = subtotal * 0.1m;
+    var total = subtotal + shipping + tax;
 }
 
-<h1>Your Shopping Cart</h1>
+<style>
+    .cart-page {
+        background: #f8f9fa;
+        padding: 40px 0;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .cart-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 40px;
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .cart-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .breadcrumb-custom {
+        background: transparent;
+        padding: 0;
+        margin-top: 15px;
+    }
+    
+    .breadcrumb-custom a {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+    }
+    
+    .breadcrumb-custom a:hover {
+        color: white;
+    }
+    
+    .breadcrumb-custom .active {
+        color: white;
+    }
+    
+    .cart-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 30px;
+    }
+    
+    .cart-items-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .cart-item {
+        display: grid;
+        grid-template-columns: 120px 1fr auto;
+        gap: 20px;
+        padding: 25px;
+        background: #f8fafc;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+    
+    .cart-item:hover {
+        border-color: #e2e8f0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .item-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: white;
+    }
+    
+    .item-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .item-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 8px;
+    }
+    
+    .item-name:hover {
+        color: #667eea;
+    }
+    
+    .item-category {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .item-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2563eb;
+    }
+    
+    .item-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+    
+    .quantity-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        border: 2px solid #cbd5e1;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+    }
+    
+    .qty-btn-cart {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: white;
+        color: #475569;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .qty-btn-cart:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+    
+    .qty-input-cart {
+        width: 50px;
+        height: 36px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #cbd5e1;
+        border-right: 1px solid #cbd5e1;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #1a202c;
+    }
+    
+    .btn-remove {
+        background: transparent;
+        border: none;
+        color: #ef4444;
+        font-size: 0.9rem;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .btn-remove:hover {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .cart-summary {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .summary-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 25px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        color: #475569;
+        font-size: 0.95rem;
+    }
+    
+    .summary-row.subtotal {
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .summary-row.total {
+        border-top: 2px solid #e2e8f0;
+        margin-top: 15px;
+        padding-top: 20px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a202c;
+    }
+    
+    .summary-row .value {
+        font-weight: 600;
+        color: #1a202c;
+    }
+    
+    .summary-row .value.highlight {
+        color: #10b981;
+        font-size: 1.1rem;
+    }
+    
+    .free-shipping-badge {
+        background: #dcfce7;
+        color: #16a34a;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .shipping-progress {
+        margin: 15px 0;
+    }
+    
+    .shipping-progress-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+    
+    .progress-bar-shipping {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar-shipping .fill {
+        height: 100%;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+    
+    .btn-checkout {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+    
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-continue {
+        width: 100%;
+        padding: 14px;
+        background: white;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+    
+    .btn-continue:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+    }
+    
+    .security-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        color: #94a3b8;
+        font-size: 0.85rem;
+    }
+    
+    .security-badges i {
+        font-size: 1.2rem;
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+    
+    .empty-cart i {
+        font-size: 5rem;
+        color: #cbd5e1;
+        margin-bottom: 25px;
+    }
+    
+    .empty-cart h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 15px;
+    }
+    
+    .empty-cart p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+    
+    .btn-shop-now {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-shop-now:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    @@media (max-width: 992px) {
+        .cart-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .cart-item {
+            grid-template-columns: 100px 1fr;
+            gap: 15px;
+        }
+        
+        .item-actions {
+            grid-column: 2;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+</style>
 
-@if (Model == null || Model.CartItems == null || !Model.CartItems.Any())
-{
-    <p>Your cart is empty.</p>
+<div class="cart-page">
+    <!-- Header -->
+    <div class="cart-header">
+        <div class="container">
+            <h1>
+                <i class="bi bi-cart3 me-2"></i>Shopping Cart
+            </h1>
+            <nav class="breadcrumb-custom">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <span class="mx-2">/</span>
+                <span class="active">Shopping Cart</span>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        @if (Model == null || Model.CartItems == null || !Model.CartItems.Any())
+        {
+            <!-- Empty Cart -->
+            <div class="empty-cart">
+                <i class="bi bi-cart-x"></i>
+                <h2>Your Cart is Empty</h2>
+                <p>Looks like you haven't added anything to your cart yet.</p>
+                <a asp-controller="Home" asp-action="Index" class="btn-shop-now">
+                    <i class="bi bi-shop"></i>
+                    Start Shopping
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-container">
+                <!-- Cart Items -->
+                <div class="cart-items-section">
+                    <h2 class="section-title">
+                        <i class="bi bi-bag"></i>
+                        Cart Items (@Model.CartItems.Count)
+                    </h2>
+
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="cart-item">
+                            <img src="@(item.Product.ProductImages?.FirstOrDefault()?.ImageUrl ?? "~/images/no-image.png")" 
+                                 alt="@item.Product.Name" 
+                                 class="item-image">
+                            
+                            <div class="item-details">
+                                <div>
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Product.ProductId" 
+                                       class="item-name">
+                                        @item.Product.Name
+                                    </a>
+                                    <div class="item-category">
+                                        <i class="bi bi-tag me-1"></i>@item.Product.Category?.Name
+                                    </div>
+                                </div>
+                                <div class="item-price">
+                                    @item.Product.Price.ToString("C")
+                                </div>
+                            </div>
+                            
+                            <div class="item-actions">
+                                <div class="quantity-control">
+                                    <button type="button" class="qty-btn-cart" onclick="updateQuantity(@item.CartItemId, -1, @item.Quantity)">
+                                        −
+                                    </button>
+                                    <input type="number" class="qty-input-cart" id="qty-@item.CartItemId" 
+                                           value="@item.Quantity" min="1" readonly>
+                                    <button type="button" class="qty-btn-cart" onclick="updateQuantity(@item.CartItemId, 1, @item.Quantity)">
+                                        +
+                                    </button>
+                                </div>
+                                
+                                <button type="button" class="btn-remove" onclick="removeItem(@item.CartItemId)">
+                                    <i class="bi bi-trash"></i>
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Order Summary -->
+                <div class="cart-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="summary-row subtotal">
+                        <span>Subtotal</span>
+                        <span class="value">@subtotal.ToString("C")</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="value @(shipping == 0 ? "highlight" : "")">
+                            @(shipping == 0 ? "FREE" : shipping.ToString("C"))
+                        </span>
+                    </div>
+                    
+                    @if (subtotal < 100 && subtotal > 0)
+                    {
+                        var remaining = 100 - subtotal;
+                        var progress = (double)(subtotal / 100) * 100;
+                        <div class="shipping-progress">
+                            <div class="shipping-progress-text">
+                                <i class="bi bi-truck"></i>
+                                Add @remaining.ToString("C") more for FREE shipping
+                            </div>
+                            <div class="progress-bar-shipping">
+                                <div class="fill" style="width: @progress%"></div>
+                            </div>
+                        </div>
+                    }
+                    else if (shipping == 0)
+                    {
+                        <div class="free-shipping-badge">
+                            <i class="bi bi-check-circle"></i>
+                            You've got FREE shipping!
+                        </div>
+                    }
+                    
+                    <div class="summary-row">
+                        <span>Tax (10%)</span>
+                        <span class="value">@tax.ToString("C")</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span class="value">@total.ToString("C")</span>
+                    </div>
+                    
+                    <a asp-area="User" asp-controller="Order" asp-action="Checkout" class="btn-checkout">
+                        <i class="bi bi-lock"></i>
+                        Secure Checkout
+                    </a>
+                    
+                    <a asp-controller="Home" asp-action="Index" class="btn-continue">
+                        <i class="bi bi-arrow-left"></i>
+                        Continue Shopping
+                    </a>
+                    
+                    <div class="security-badges">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Secure Payment</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateQuantity(cartItemId, change, currentQty) {
+            var newQty = currentQty + change;
+            if (newQty < 1) return;
+            
+            // Update UI immediately
+            $('#qty-' + cartItemId).val(newQty);
+            
+            // Send AJAX request
+            $.ajax({
+                url: '@Url.Action("UpdateCartItem", "Cart")',
+                type: 'POST',
+                data: {
+                    cartItemId: cartItemId,
+                    quantity: newQty
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Reload page to update totals
+                        location.reload();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to update quantity',
+                            timer: 2000
+                        });
+                        $('#qty-' + cartItemId).val(currentQty);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update quantity',
+                        timer: 2000
+                    });
+                    $('#qty-' + cartItemId).val(currentQty);
+                }
+            });
+        }
+        
+        function removeItem(cartItemId) {
+            Swal.fire({
+                title: 'Remove Item?',
+                text: 'Are you sure you want to remove this item from cart?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("RemoveFromCart", "Cart")',
+                        type: 'POST',
+                        data: { cartItemId: cartItemId },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Removed!',
+                                    text: 'Item has been removed from cart',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to remove item'
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 }
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.CartItems)
-            {
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Product.Price.ToString("C")</td>
-                    <td>
-                        <form asp-action="UpdateCartItem" method="post">
-                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                            <input type="number" name="quantity" value="@item.Quantity" min="1" />
-                            <button type="submit" class="btn btn-link">Update</button>
-                        </form>
-                    </td>
-                    <td>@(item.Product.Price * item.Quantity)</td>
-                    <td>
-                        <form asp-action="RemoveFromCart" method="post">
-                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-    <h3>Total: @Model.CartItems.Sum(ci => ci.Product.Price * ci.Quantity).ToString("C")</h3>
-
-    <a class="btn btn-primary" asp-area="User" asp-controller="Order" asp-action="Checkout">Proceed to Checkout</a>
-}
