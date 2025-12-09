@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "My Wishlist";
+}
+
+<div class="wishlist-page">
+    <!-- Hero Section -->
+    <section class="hero-section text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-2">
+                <i class="bi bi-heart-fill me-2"></i>My Wishlist
+            </h1>
+            <p class="lead mb-0">Save your favorite products for later</p>
+        </div>
+    </section>
+
+    <div class="container mt-4">
+        <!-- Empty State -->
+        <div id="emptyWishlist" class="text-center py-5" style="display: none;">
+            <div class="mb-4">
+                <i class="bi bi-heart display-1 text-muted"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Your Wishlist is Empty</h3>
+            <p class="text-muted mb-4">
+                Start adding products you love to your wishlist!
+            </p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                <i class="bi bi-shop me-2"></i>Start Shopping
+            </a>
+        </div>
+
+        <!-- Wishlist Items -->
+        <div id="wishlistItems" class="row g-4"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadWishlist();
+
+            function loadWishlist() {
+                var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                
+                if (wishlist.length === 0) {
+                    $('#emptyWishlist').show();
+                    $('#wishlistItems').hide();
+                    return;
+                }
+
+                $('#emptyWishlist').hide();
+                $('#wishlistItems').show();
+
+                // Load products from wishlist
+                wishlist.forEach(function(productId) {
+                    loadProduct(productId);
+                });
+            }
+
+            function loadProduct(productId) {
+                $.get('@Url.Action("QuickView", "Home")/' + productId, function(data) {
+                    var $data = $(data);
+                    var name = $data.find('h3').text();
+                    var price = $data.find('h2.text-primary').text();
+                    var category = $data.find('.badge.bg-light').text().trim();
+                    var imageUrl = $data.find('#quickViewMainImage').attr('src');
+                    var description = $data.find('.mb-4 p.text-muted').first().text();
+                    var stockStatus = $data.find('.text-success, .text-danger').text().trim();
+                    var isInStock = stockStatus.includes('In Stock');
+
+                    var card = `
+                        <div class="col-md-6 col-lg-4 wishlist-item" data-product-id="${productId}">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="position-relative">
+                                    <img src="${imageUrl}" class="card-img-top" alt="${name}" style="height: 250px; object-fit: cover;">
+                                    <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 remove-from-wishlist" data-product-id="${productId}">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <span class="badge bg-light text-primary border border-primary mb-2 align-self-start">
+                                        ${category}
+                                    </span>
+                                    <h5 class="card-title">${name}</h5>
+                                    <p class="card-text text-muted small flex-grow-1">
+                                        ${description.substring(0, 100)}...
+                                    </p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h4 class="text-primary mb-0">${price}</h4>
+                                            <span class="badge ${isInStock ? 'bg-success' : 'bg-danger'}">
+                                                ${stockStatus}
+                                            </span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            ${isInStock ? `
+                                                <button class="btn btn-primary add-to-cart-from-wishlist" data-product-id="${productId}">
+                                                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                                </button>
+                                            ` : `
+                                                <button class="btn btn-secondary" disabled>
+                                                    <i class="bi bi-x-circle me-2"></i>Out of Stock
+                                                </button>
+                                            `}
+                                            <a href="@Url.Action("Details", "Home")/${productId}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye me-2"></i>View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    $('#wishlistItems').append(card);
+                });
+            }
+
+            // Remove from wishlist
+            $(document).on('click', '.remove-from-wishlist', function() {
+                var productId = $(this).data('product-id');
+                var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                wishlist = wishlist.filter(id => id !== productId);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                
+                $(`.wishlist-item[data-product-id="${productId}"]`).fadeOut(300, function() {
+                    $(this).remove();
+                    if ($('.wishlist-item').length === 0) {
+                        $('#emptyWishlist').fadeIn();
+                        $('#wishlistItems').hide();
+                    }
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed',
+                    text: 'Product removed from wishlist',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            });
+
+            // Add to cart from wishlist
+            $(document).on('click', '.add-to-cart-from-wishlist', function() {
+                var $btn = $(this);
+                var productId = $btn.data('product-id');
+                var originalHtml = $btn.html();
+                
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
+                
+                $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: 1 }, function(response) {
+                    $('#cartItemCount').text(response.cartItemCount);
+                    $btn.html('<i class="bi bi-check-circle me-2"></i>Added!');
+                    
+                    setTimeout(function() {
+                        $btn.html(originalHtml).prop('disabled', false);
+                    }, 2000);
+                    
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product added to cart',
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }).fail(function() {
+                    $btn.html(originalHtml).prop('disabled', false);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to add product to cart'
+                    });
+                });
+            });
+        });
+    </script>
+}
+
+<style>
+    .hero-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .wishlist-item {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+    }
+</style>

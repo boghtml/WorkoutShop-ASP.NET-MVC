@@ -72,7 +72,7 @@
                             <label class="form-label fw-semibold mb-3">
                                 <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Category
                             </label>
-                            <select name="categoryId" id="category" class="form-select form-select-lg">
+                            <select name="categoryId" id="category" class="form-select">
                                 <option value="">All Categories</option>
                                 @foreach (var cat in Model.Select(p => p.Category).Distinct())
                                 {
@@ -120,7 +120,7 @@
                             <label class="form-label fw-semibold mb-3">
                                 <i class="bi bi-sort-down text-primary me-2"></i>Sort By
                             </label>
-                            <select name="sortOrder" id="sortOrder" class="form-select form-select-lg">
+                            <select name="sortOrder" id="sortOrder" class="form-select">
                                 <option value="">Featured</option>
                                 <option value="price_asc" selected="@(Context.Request.Query["sortOrder"] == "price_asc")">
                                     <i class="bi bi-arrow-up"></i> Price: Low to High
@@ -140,7 +140,7 @@
 
                     <!-- Action Buttons -->
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                        <button type="submit" class="btn btn-primary shadow-sm">
                             <i class="bi bi-check-circle me-2"></i>Apply Filters
                         </button>
                         <button type="button" class="btn btn-outline-secondary" id="resetFilters">
@@ -350,18 +350,13 @@
                                         
                                         @if (product.StockQuantity > 0)
                                         {
-                                            <div class="d-grid gap-2">
-                                                <button class="btn btn-primary add-to-cart-quick" data-product-id="@product.ProductId">
-                                                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
-                                                </button>
-                                                <button class="btn btn-outline-primary btn-sm quick-view-btn" data-product-id="@product.ProductId">
-                                                    <i class="bi bi-eye me-2"></i>Quick View
-                                                </button>
-                                            </div>
+                                            <button class="btn btn-primary btn-lg w-100 add-to-cart-quick shadow-sm" data-product-id="@product.ProductId">
+                                                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                            </button>
                                         }
                                         else
                                         {
-                                            <button class="btn btn-secondary disabled w-100" disabled>
+                                            <button class="btn btn-secondary btn-lg w-100 disabled" disabled>
                                                 <i class="bi bi-x-circle me-2"></i>Out of Stock
                                             </button>
                                         }
@@ -438,6 +433,156 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Enhanced Product Cards */
+    .product-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        border-radius: 12px !important;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2) !important;
+    }
+    
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    
+    .product-image {
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.1);
+    }
+    
+    /* Quick Action Overlay */
+    .product-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        padding: 20px;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-overlay {
+        transform: translateY(0);
+    }
+    
+    .product-overlay .btn {
+        width: 45px;
+        height: 45px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    .product-overlay .btn:hover {
+        transform: scale(1.15);
+        background: white !important;
+        color: #667eea !important;
+    }
+    
+    /* Badge Styles */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Rating Stars */
+    .bi-star-fill,
+    .bi-star-half,
+    .bi-star {
+        font-size: 0.9rem;
+    }
+    
+    /* Add to Cart Button Animation */
+    .add-to-cart-quick {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .add-to-cart-quick:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    }
+    
+    /* Wishlist & Compare Active States */
+    .wishlist-btn.active i,
+    .wishlist-btn.active {
+        color: #dc3545 !important;
+        background: rgba(220, 53, 69, 0.1) !important;
+    }
+    
+    .compare-btn.active i,
+    .compare-btn.active {
+        color: #0dcaf0 !important;
+        background: rgba(13, 202, 240, 0.1) !important;
+    }
+    
+    /* List View Styles */
+    #productsGrid.list-view .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    #productsGrid.list-view .card {
+        flex-direction: row;
+    }
+    
+    #productsGrid.list-view .product-image-wrapper {
+        flex: 0 0 250px;
+    }
+    
+    #productsGrid.list-view .card img {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+    }
+    
+    /* Price Display */
+    .card-title a:hover {
+        color: #667eea !important;
+    }
+    
+    /* Smooth Animations */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .product-item {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+    
+    .product-item:nth-child(1) { animation-delay: 0.1s; }
+    .product-item:nth-child(2) { animation-delay: 0.2s; }
+    .product-item:nth-child(3) { animation-delay: 0.3s; }
+    .product-item:nth-child(4) { animation-delay: 0.1s; }
+    .product-item:nth-child(5) { animation-delay: 0.2s; }
+    .product-item:nth-child(6) { animation-delay: 0.3s; }
 
 <style>
     .hero-banner {
@@ -539,11 +684,31 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Add to Cart
-            $('.add-to-cart').click(function () {
-                var productId = $(this).data('product-id');
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Add to Cart (both old and new buttons)
+            $('.add-to-cart, .add-to-cart-quick').click(function () {
+                var $btn = $(this);
+                var productId = $btn.data('product-id');
+                var originalHtml = $btn.html();
+                
+                // Button loading state
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
+                
                 $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: 1 }, function (response) {
                     $('#cartItemCount').text(response.cartItemCount);
+                    
+                    // Success state
+                    $btn.html('<i class="bi bi-check-circle me-2"></i>Added!');
+                    
+                    setTimeout(function() {
+                        $btn.html(originalHtml).prop('disabled', false);
+                    }, 2000);
+                    
                     Swal.fire({
                         title: 'Success!',
                         text: 'Product added to cart',
@@ -555,6 +720,7 @@
                         timerProgressBar: true
                     });
                 }).fail(function () {
+                    $btn.html(originalHtml).prop('disabled', false);
                     Swal.fire({
                         title: 'Error!',
                         text: 'Failed to add product to cart',
@@ -562,6 +728,179 @@
                         confirmButtonText: 'OK'
                     });
                 });
+            });
+
+            // Quick View Modal
+            $(document).on('click', '.quick-view-btn', function () {
+                var productId = $(this).data('product-id');
+                var modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+                
+                // Show loading state
+                $('#quickViewContent').html(`
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Loading product details...</p>
+                    </div>
+                `);
+                
+                modal.show();
+                
+                // Load product details via AJAX
+                $.get('@Url.Action("QuickView", "Home")/' + productId, function(data) {
+                    $('#quickViewContent').html(data);
+                    
+                    // Re-attach event handlers for modal buttons
+                    attachModalEventHandlers();
+                }).fail(function() {
+                    $('#quickViewContent').html(`
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Failed to load product details. Please try again.
+                        </div>
+                    `);
+                });
+            });
+
+            function attachModalEventHandlers() {
+                // Add to cart from modal
+                $('.add-to-cart-quick-modal').off('click').on('click', function() {
+                    var $btn = $(this);
+                    var productId = $btn.data('product-id');
+                    var quantity = $('#quickViewQuantity').val() || 1;
+                    var originalHtml = $btn.html();
+                    
+                    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Adding...');
+                    
+                    $.post('@Url.Action("AddToCart", "Cart")', { productId: productId, quantity: quantity }, function(response) {
+                        $('#cartItemCount').text(response.cartItemCount);
+                        $btn.html('<i class="bi bi-check-circle me-2"></i>Added!');
+                        
+                        setTimeout(function() {
+                            $btn.html(originalHtml).prop('disabled', false);
+                        }, 2000);
+                        
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Product added to cart',
+                            icon: 'success',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }).fail(function() {
+                        $btn.html(originalHtml).prop('disabled', false);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to add product to cart'
+                        });
+                    });
+                });
+
+                // Wishlist from modal
+                $('.wishlist-btn-modal').off('click').on('click', function() {
+                    var $btn = $(this);
+                    var productId = $btn.data('product-id');
+                    var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                    var index = wishlist.indexOf(productId);
+                    
+                    if (index > -1) {
+                        wishlist.splice(index, 1);
+                        $btn.removeClass('active');
+                    } else {
+                        wishlist.push(productId);
+                        $btn.addClass('active');
+                    }
+                    
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    $(document).trigger('wishlistUpdated');
+                    
+                    // Update main page buttons
+                    $(`.wishlist-btn[data-product-id="${productId}"]`).toggleClass('active');
+                    
+                    var toast = new bootstrap.Toast(document.getElementById('wishlistToast'));
+                    toast.show();
+                });
+            }
+
+            // Wishlist functionality
+            var wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            
+            function updateWishlistButtons() {
+                wishlist.forEach(function(id) {
+                    $(`.wishlist-btn[data-product-id="${id}"]`).addClass('active');
+                });
+            }
+            
+            updateWishlistButtons();
+            
+            $('.wishlist-btn').click(function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var productId = $btn.data('product-id');
+                var index = wishlist.indexOf(productId);
+                
+                if (index > -1) {
+                    wishlist.splice(index, 1);
+                    $btn.removeClass('active');
+                    $('#wishlistToastBody').text('Product removed from wishlist!');
+                } else {
+                    wishlist.push(productId);
+                    $btn.addClass('active');
+                    $('#wishlistToastBody').text('Product added to wishlist!');
+                }
+                
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                $(document).trigger('wishlistUpdated');
+                
+                var toast = new bootstrap.Toast(document.getElementById('wishlistToast'));
+                toast.show();
+            });
+
+            // Compare functionality
+            var compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+            
+            function updateCompareButtons() {
+                compareList.forEach(function(id) {
+                    $(`.compare-btn[data-product-id="${id}"]`).addClass('active');
+                });
+            }
+            
+            updateCompareButtons();
+            
+            $('.compare-btn').click(function (e) {
+                e.preventDefault();
+                var $btn = $(this);
+                var productId = $btn.data('product-id');
+                var index = compareList.indexOf(productId);
+                
+                if (index > -1) {
+                    compareList.splice(index, 1);
+                    $btn.removeClass('active');
+                    $('#compareToastBody').text('Product removed from compare list!');
+                } else {
+                    if (compareList.length >= 4) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Compare Limit',
+                            text: 'You can only compare up to 4 products at a time.',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+                    compareList.push(productId);
+                    $btn.addClass('active');
+                    $('#compareToastBody').text(`Product added! (${compareList.length}/4)`);
+                }
+                
+                localStorage.setItem('compareList', JSON.stringify(compareList));
+                $(document).trigger('compareUpdated');
+                
+                var toast = new bootstrap.Toast(document.getElementById('compareToast'));
+                toast.show();
             });
 
             // Price range display update

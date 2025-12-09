@@ -1,0 +1,202 @@
+@model WorkoutShop.Models.Product
+
+<div class="row g-4">
+    <!-- Product Images -->
+    <div class="col-md-6">
+        <div class="quick-view-gallery">
+            @if (Model.ProductImages != null && Model.ProductImages.Any())
+            {
+                var images = Model.ProductImages.ToList();
+                var primaryImage = images.FirstOrDefault(i => i.IsPrimary) ?? images.First();
+                
+                <!-- Main Image -->
+                <div class="main-image-container mb-3">
+                    <img src="@primaryImage.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm w-100" id="quickViewMainImage" style="max-height: 400px; object-fit: contain;">
+                </div>
+                
+                <!-- Thumbnails -->
+                @if (images.Count > 1)
+                {
+                    <div class="d-flex gap-2 flex-wrap">
+                        @foreach (var img in images)
+                        {
+                            <div class="thumbnail-item @(img.IsPrimary ? "active" : "")" style="cursor: pointer; flex: 0 0 80px;">
+                                <img src="@img.ImageUrl" alt="@Model.Name" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;" onclick="changeQuickViewImage('@img.ImageUrl', this)">
+                            </div>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <img src="~/images/no-image.png" alt="No Image" class="img-fluid rounded" style="max-height: 400px; object-fit: contain;">
+            }
+        </div>
+    </div>
+
+    <!-- Product Information -->
+    <div class="col-md-6">
+        <div class="quick-view-info">
+            <!-- Category Badge -->
+            <div class="mb-2">
+                <span class="badge bg-light text-primary border border-primary">
+                    <i class="bi bi-tag me-1"></i>@Model.Category.Name
+                </span>
+            </div>
+
+            <!-- Product Name -->
+            <h3 class="fw-bold mb-3">@Model.Name</h3>
+
+            <!-- Rating -->
+            @{
+                var randomRating = new Random(Model.ProductId).Next(35, 50) / 10.0;
+                var reviewCount = new Random(Model.ProductId + 1000).Next(5, 150);
+            }
+            <div class="mb-3">
+                <div class="d-flex align-items-center">
+                    <div class="text-warning me-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Floor(randomRating))
+                            {
+                                <i class="bi bi-star-fill"></i>
+                            }
+                            else if (i <= Math.Ceiling(randomRating))
+                            {
+                                <i class="bi bi-star-half"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-star"></i>
+                            }
+                        }
+                    </div>
+                    <span class="text-muted">(@randomRating.ToString("F1")) • @reviewCount reviews</span>
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+                <div class="d-flex align-items-baseline gap-3">
+                    <h2 class="text-primary fw-bold mb-0">@Model.Price.ToString("C")</h2>
+                    <span class="text-muted text-decoration-line-through">@((Model.Price * 1.2m).ToString("C"))</span>
+                    <span class="badge bg-success">Save @((Model.Price * 0.2m).ToString("C"))</span>
+                </div>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="mb-4">
+                @if (Model.StockQuantity > 0)
+                {
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <span class="text-success fw-semibold">In Stock</span>
+                        @if (Model.StockQuantity <= 10)
+                        {
+                            <span class="badge bg-warning text-dark ms-2">Only @Model.StockQuantity left!</span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                        <span class="text-danger fw-semibold">Out of Stock</span>
+                    </div>
+                }
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h6 class="fw-bold mb-2">Description:</h6>
+                <p class="text-muted">@Model.Description</p>
+            </div>
+
+            <!-- Features -->
+            <div class="mb-4">
+                <h6 class="fw-bold mb-2">Key Features:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success me-2"></i>Premium Quality Materials</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>Durable Construction</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>Easy to Use</li>
+                    <li><i class="bi bi-check-circle text-success me-2"></i>Free Shipping Available</li>
+                </ul>
+            </div>
+
+            <!-- Quantity Selector -->
+            @if (Model.StockQuantity > 0)
+            {
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Quantity:</label>
+                    <div class="input-group" style="max-width: 150px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity()">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" class="form-control text-center" id="quickViewQuantity" value="1" min="1" max="@Model.StockQuantity">
+                        <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity(@Model.StockQuantity)">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-primary flex-fill add-to-cart-quick-modal" data-product-id="@Model.ProductId">
+                        <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                    </button>
+                    <button class="btn btn-outline-danger wishlist-btn-modal" data-product-id="@Model.ProductId">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+            }
+
+            <!-- Full Details Link -->
+            <div class="text-center mt-3">
+                <a asp-action="Details" asp-route-id="@Model.ProductId" class="btn btn-link">
+                    View Full Details <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeQuickViewImage(imageUrl, thumbnail) {
+        document.getElementById('quickViewMainImage').src = imageUrl;
+        document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('active'));
+        thumbnail.parentElement.classList.add('active');
+    }
+
+    function incrementQuantity(max) {
+        var input = document.getElementById('quickViewQuantity');
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+
+    function decrementQuantity() {
+        var input = document.getElementById('quickViewQuantity');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+</script>
+
+<style>
+    .thumbnail-item {
+        border: 2px solid transparent;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .thumbnail-item:hover,
+    .thumbnail-item.active {
+        border-color: #667eea;
+        transform: scale(1.05);
+    }
+
+    .quick-view-info h6 {
+        color: #333;
+    }
+</style>
