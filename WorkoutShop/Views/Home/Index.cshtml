@@ -8,9 +8,9 @@
 <div class="hero-banner text-white text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-top: -20px;">
     <div class="container">
         <h1 class="display-4 fw-bold mb-3">
-            <i class="bi bi-lightning-charge-fill"></i> Premium Workout Equipment
+            <i class="bi bi-lightning-charge-fill"></i> @Localizer["PremiumWorkoutEquipment"]
         </h1>
-        <p class="lead mb-4">Transform your fitness journey with our professional-grade equipment</p>
+        <p class="lead mb-4">@Localizer["TransformYourFitness"]</p>
         
         <!-- Quick Search Bar -->
         <div class="row justify-content-center">
@@ -21,10 +21,10 @@
                             <i class="bi bi-search text-primary"></i>
                         </span>
                         <input type="text" name="searchTerm" id="searchTermTop" class="form-control border-0" 
-                               placeholder="Search for dumbbells, treadmills, supplements..." 
+                               placeholder="@Localizer["SearchForProducts"]" 
                                value="@Context.Request.Query["searchTerm"]">
                         <button class="btn btn-light px-4" type="submit">
-                            <i class="bi bi-search me-2"></i>Search
+                            <i class="bi bi-search me-2"></i>@Localizer["Search"]
                         </button>
                     </div>
                 </form>
@@ -41,10 +41,10 @@
                 <!-- Filter Header -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0">
-                        <i class="bi bi-funnel-fill text-primary me-2"></i>Filters
+                        <i class="bi bi-funnel-fill text-primary me-2"></i>@Localizer["Filters"]
                     </h5>
                     <button type="button" class="btn btn-sm btn-link text-decoration-none" id="clearFilters">
-                        <i class="bi bi-x-circle"></i> Clear All
+                        <i class="bi bi-x-circle"></i> @Localizer["ClearFilters"]
                     </button>
                 </div>
 
@@ -53,7 +53,7 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <label class="form-label fw-semibold mb-2">
-                                <i class="bi bi-search text-primary me-2"></i>Search Products
+                                <i class="bi bi-search text-primary me-2"></i>@Localizer["Search"] @Localizer["Products"]
                             </label>
                             <div class="input-group">
                                 <input type="text" name="searchTerm" id="searchTerm" class="form-control" 
@@ -70,10 +70,10 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <label class="form-label fw-semibold mb-3">
-                                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Category
+                                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>@Localizer["Category"]
                             </label>
                             <select name="categoryId" id="category" class="form-select">
-                                <option value="">All Categories</option>
+                                <option value="">@Localizer["AllCategories"]</option>
                                 @foreach (var cat in Model.Select(p => p.Category).Distinct())
                                 {
                                     <option value="@cat.CategoryId" selected="@(Context.Request.Query["categoryId"] == cat.CategoryId.ToString())">
@@ -88,14 +88,14 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <label class="form-label fw-semibold mb-3">
-                                <i class="bi bi-currency-dollar text-primary me-2"></i>Price Range
+                                <i class="bi bi-currency-dollar text-primary me-2"></i>@Localizer["PriceRange"]
                             </label>
                             <div class="row g-2 mb-2">
                                 <div class="col-6">
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
                                         <input type="number" name="minPrice" id="minPrice" 
-                                               class="form-control" placeholder="Min" step="0.01" 
+                                               class="form-control" placeholder="@Localizer["MinPrice"]" step="0.01" 
                                                value="@Context.Request.Query["minPrice"]">
                                     </div>
                                 </div>
@@ -103,7 +103,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text">$</span>
                                         <input type="number" name="maxPrice" id="maxPrice" 
-                                               class="form-control" placeholder="Max" step="0.01" 
+                                               class="form-control" placeholder="@Localizer["MaxPrice"]" step="0.01" 
                                                value="@Context.Request.Query["maxPrice"]">
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body">
                             <label class="form-label fw-semibold mb-3">
-                                <i class="bi bi-sort-down text-primary me-2"></i>Sort By
+                                <i class="bi bi-sort-down text-primary me-2"></i>@Localizer["SortBy"]
                             </label>
                             <select name="sortOrder" id="sortOrder" class="form-select">
                                 <option value="">Featured</option>
@@ -141,7 +141,7 @@
                     <!-- Action Buttons -->
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary shadow-sm">
-                            <i class="bi bi-check-circle me-2"></i>Apply Filters
+                            <i class="bi bi-check-circle me-2"></i>@Localizer["ApplyFilters"]
                         </button>
                         <button type="button" class="btn btn-outline-secondary" id="resetFilters">
                             <i class="bi bi-arrow-clockwise me-2"></i>Reset
@@ -351,13 +351,13 @@
                                         @if (product.StockQuantity > 0)
                                         {
                                             <button class="btn btn-primary btn-lg w-100 add-to-cart-quick shadow-sm" data-product-id="@product.ProductId">
-                                                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                                <i class="bi bi-cart-plus me-2"></i>@Localizer["AddToCart"]
                                             </button>
                                         }
                                         else
                                         {
                                             <button class="btn btn-secondary btn-lg w-100 disabled" disabled>
-                                                <i class="bi bi-x-circle me-2"></i>Out of Stock
+                                                <i class="bi bi-x-circle me-2"></i>@Localizer["OutOfStock"]
                                             </button>
                                         }
                                     </div>
@@ -373,13 +373,13 @@
                     <div class="mb-4">
                         <i class="bi bi-inbox display-1 text-muted"></i>
                     </div>
-                    <h3 class="fw-bold mb-3">No Products Found</h3>
+                    <h3 class="fw-bold mb-3">@Localizer["NoProductsFound"]</h3>
                     <p class="text-muted mb-4">
                         We couldn't find any products matching your criteria.<br>
                         Try adjusting your filters or search terms.
                     </p>
                     <button type="button" class="btn btn-primary" id="clearAllFilters">
-                        <i class="bi bi-arrow-clockwise me-2"></i>Clear Filters
+                        <i class="bi bi-arrow-clockwise me-2"></i>@Localizer["ClearFilters"]
                     </button>
                 </div>
             }

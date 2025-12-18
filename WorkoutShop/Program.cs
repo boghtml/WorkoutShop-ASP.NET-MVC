@@ -10,14 +10,16 @@ using WorkoutShop.Services.ShoppingCartService;
 using Microsoft.Extensions.DependencyInjection;
 using WorkoutShop.Repositories.CategoryRepository;
 using WorkoutShop.Repositories.ProductRepository;
-using WorkoutShop.Services.CategoryService; // Додано
+using WorkoutShop.Services.CategoryService;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using Microsoft.Extensions.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -30,7 +32,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Конфігурація cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/User/Account/Login";
@@ -38,12 +39,42 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/User/Account/AccessDenied";
 });
 
+// Configure Localization
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("en"),
+        new CultureInfo("uk")
+    };
+    
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
 
-builder.Services.AddControllersWithViews();
+    // Make culture switching reliable:
+    // - Query string: ?culture=uk&ui-culture=uk
+    // - Cookie: set by LanguageController
+    // - Accept-Language header fallback
+    options.RequestCultureProviders = new List<IRequestCultureProvider>
+    {
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider(),
+        new AcceptLanguageHeaderRequestCultureProvider()
+    };
+});
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization(options =>
+    {
+        options.DataAnnotationLocalizerProvider = (type, factory) =>
+            factory.Create(typeof(WorkoutShop.Resources.SharedResources));
+    });
 builder.Services.AddAntiforgery(options => options.HeaderName = "X-CSRF-TOKEN");
 
-// Реєстрація сервісів та репозиторіїв
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
@@ -57,8 +88,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();  // Додає консольне логування
-builder.Logging.SetMinimumLevel(LogLevel.Information); // Встановлює мінімальний рівень логування
+builder.Logging.AddConsole();  
+builder.Logging.SetMinimumLevel(LogLevel.Information); 
 
 var app = builder.Build();
 
@@ -71,6 +102,9 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var localizationOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
 
 app.UseRouting();
 
@@ -85,7 +119,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Додайте цей код перед app.Run();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -96,9 +129,6 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 
-
-
-// Асинхронний метод для ініціалізації ролей та адміністратора
 async Task InitializeRolesAndAdminAsync(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -127,7 +157,7 @@ async Task InitializeRolesAndAdminAsync(IServiceProvider serviceProvider)
             EmailConfirmed = true,
             CreatedAt = DateTime.UtcNow
         };
-        var result = await userManager.CreateAsync(admin, "1234567890HTMLl"); // Змініть пароль на більш безпечний
+        var result = await userManager.CreateAsync(admin, "1234567890HTMLl");
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(admin, "Admin");

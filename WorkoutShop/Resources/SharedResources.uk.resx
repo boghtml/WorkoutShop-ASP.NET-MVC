@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Home" xml:space="preserve">
+    <value>Головна</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Товари</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Кошик</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Вхід</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Реєстрація</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Пошук</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>Додати в кошик</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>Переглянути деталі</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Ціна</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Категорія</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>Всі категорії</value>
+  </data>
+  <data name="Filters" xml:space="preserve">
+    <value>Фільтри</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>Очистити фільтри</value>
+  </data>
+  <data name="ApplyFilters" xml:space="preserve">
+    <value>Застосувати фільтри</value>
+  </data>
+  <data name="SortBy" xml:space="preserve">
+    <value>Сортувати за</value>
+  </data>
+  <data name="PriceRange" xml:space="preserve">
+    <value>Діапазон цін</value>
+  </data>
+  <data name="MinPrice" xml:space="preserve">
+    <value>Мін. ціна</value>
+  </data>
+  <data name="MaxPrice" xml:space="preserve">
+    <value>Макс. ціна</value>
+  </data>
+  <data name="NoProductsFound" xml:space="preserve">
+    <value>Товари не знайдені</value>
+  </data>
+  <data name="PremiumWorkoutEquipment" xml:space="preserve">
+    <value>Преміум обладнання для тренувань</value>
+  </data>
+  <data name="TransformYourFitness" xml:space="preserve">
+    <value>Трансформуйте свою фітнес-подорож з нашим професійним обладнанням</value>
+  </data>
+  <data name="SearchForProducts" xml:space="preserve">
+    <value>Шукати товари...</value>
+  </data>
+  <data name="QuickView" xml:space="preserve">
+    <value>Швидкий перегляд</value>
+  </data>
+  <data name="AddToWishlist" xml:space="preserve">
+    <value>Додати в обране</value>
+  </data>
+  <data name="Compare" xml:space="preserve">
+    <value>Порівняти</value>
+  </data>
+  <data name="NewArrival" xml:space="preserve">
+    <value>Новинка</value>
+  </data>
+  <data name="BestSeller" xml:space="preserve">
+    <value>Бестселер</value>
+  </data>
+  <data name="Reviews" xml:space="preserve">
+    <value>Відгуки</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>В наявності</value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Немає в наявності</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Про нас</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Контакти</value>
+  </data>
+  <data name="Wishlist" xml:space="preserve">
+    <value>Обране</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Акаунт</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Профіль</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Замовлення</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Вийти</value>
+  </data>
+</root>

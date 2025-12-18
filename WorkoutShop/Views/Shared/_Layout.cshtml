@@ -204,28 +204,28 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door me-1"></i>Home
+                                <i class="bi bi-house-door me-1"></i>@Localizer["Home"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">
-                                <i class="bi bi-info-circle me-1"></i>About
+                                <i class="bi bi-info-circle me-1"></i>@Localizer["About"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">
-                                <i class="bi bi-envelope me-1"></i>Contact
+                                <i class="bi bi-envelope me-1"></i>@Localizer["Contact"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Wishlist">
-                                <i class="bi bi-heart me-1"></i>Wishlist
+                                <i class="bi bi-heart me-1"></i>@Localizer["Wishlist"]
                                 <span class="badge bg-danger ms-1" id="wishlistCount" style="display: none;">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Compare">
-                                <i class="bi bi-arrow-left-right me-1"></i>Compare
+                                <i class="bi bi-arrow-left-right me-1"></i>@Localizer["Compare"]
                                 <span class="badge bg-info ms-1" id="compareCount" style="display: none;">0</span>
                             </a>
                         </li>
@@ -243,26 +243,26 @@
                                 else
                                 {
                                     <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
-                                    <span>Account</span>
+                                    <span>@Localizer["Account"]</span>
                                 }
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Home" asp-action="Profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Order" asp-action="Index"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
+                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Home" asp-action="Profile"><i class="fas fa-user me-2"></i>@Localizer["Profile"]</a></li>
+                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Order" asp-action="Index"><i class="fas fa-shopping-bag me-2"></i>@Localizer["Orders"]</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-area="User" asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-link dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                            <button type="submit" class="btn btn-link dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>@Localizer["Logout"]</button>
                                         </form>
                                     </li>
                                 }
                                 else
                                 {
-                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Account" asp-action="Login"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Account" asp-action="Register"><i class="fas fa-user-plus me-2"></i>Register</a></li>
+                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Account" asp-action="Login"><i class="fas fa-sign-in-alt me-2"></i>@Localizer["Login"]</a></li>
+                                    <li><a class="dropdown-item" asp-area="User" asp-controller="Account" asp-action="Register"><i class="fas fa-user-plus me-2"></i>@Localizer["Register"]</a></li>
                                 }
                             </ul>
                         </li>
@@ -278,6 +278,27 @@
                                     }
                                 }
                             </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-globe"></i>
+                                @{
+                                    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+                                }
+                                <span class="ms-1">@(currentCulture.StartsWith("uk") ? "Українська" : "English")</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("SetLanguage", "Language", new { culture = "en", returnUrl = Context.Request.Path + Context.Request.QueryString })">
+                                        <i class="bi bi-flag-usa me-2"></i>English
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("SetLanguage", "Language", new { culture = "uk", returnUrl = Context.Request.Path + Context.Request.QueryString })">
+                                        <i class="bi bi-flag me-2"></i>Українська
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
