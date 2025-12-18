@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WorkoutShop.Areas.Admin.Controllers
 {
-    [Area("Admin")] // Переконайтеся, що цей атрибут присутній
+    [Area("Admin")] 
 
     public class ProductController : AdminBaseController
     {
@@ -64,7 +64,6 @@ namespace WorkoutShop.Areas.Admin.Controllers
             {
                 _logger.LogWarning("Model state is invalid.");
 
-                // Логування помилок ModelState
                 foreach (var key in ModelState.Keys)
                 {
                     var state = ModelState[key];
@@ -101,21 +100,18 @@ namespace WorkoutShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    // Завантажуємо існуючий продукт з бази даних
                     var existingProduct = await _productService.GetProductByIdAsync(product.ProductId);
                     if (existingProduct == null)
                     {
                         return NotFound();
                     }
 
-                    // Оновлюємо властивості продукту
                     existingProduct.Name = product.Name;
                     existingProduct.Description = product.Description;
                     existingProduct.Price = product.Price;
                     existingProduct.StockQuantity = product.StockQuantity;
                     existingProduct.CategoryId = product.CategoryId;
 
-                    // Оновлюємо продукт через сервіс
                     await _productService.UpdateProductAsync(existingProduct, ImageUrl, ImagesToDelete);
 
                     return RedirectToAction(nameof(Index));

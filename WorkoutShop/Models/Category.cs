@@ -6,7 +6,7 @@ namespace WorkoutShop.Models
     public class Category
     {
         [Key]
-        public int CategoryId { get; set; }  // Зміна типу з Guid на int
+        public int CategoryId { get; set; }
 
         [Required]
         [MaxLength(50)]

@@ -7,7 +7,6 @@
     var currentStatus = Context.Request.Query["status"].ToString();
     var searchString = Context.Request.Query["searchString"].ToString();
 
-    // Створюємо список статусів
     var statusList = new List<SelectListItem>
     {
         new SelectListItem { Value = "", Text = "All" },
@@ -16,7 +15,6 @@
         new SelectListItem { Value = "Completed", Text = "Completed" }
     };
 
-    // Встановлюємо вибраний статус
     var statusSelectList = new SelectList(statusList, "Value", "Text", currentStatus);
 }
 

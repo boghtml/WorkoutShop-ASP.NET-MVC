@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic; // Додано для ICollection
+using System.Collections.Generic; 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -9,7 +9,7 @@ namespace WorkoutShop.Models
     public class Product
     {
         [Key]
-        public int ProductId { get; set; }  // Використовуємо автоінкрементний int
+        public int ProductId { get; set; }  
 
         [Required(ErrorMessage = "Name is required.")]
         [MaxLength(100)]
@@ -24,13 +24,12 @@ namespace WorkoutShop.Models
         public int StockQuantity { get; set; }
 
         [Required(ErrorMessage = "Category is required.")]
-        public int CategoryId { get; set; }  // Використовуємо int для ForeignKey
+        public int CategoryId { get; set; } 
 
         [ForeignKey("CategoryId")]
-        [ValidateNever] // Додано атрибут, щоб ігнорувати валідацію цієї властивості
+        [ValidateNever] 
         public Category Category { get; set; }
 
-        // Додано колекцію зображень продукту
         public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

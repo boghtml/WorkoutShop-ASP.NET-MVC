@@ -29,6 +29,6 @@ namespace WorkoutShop.Models
 
         public DateTime? UpdatedAt { get; set; }
 
-        public ICollection<OrderItem> OrderItems { get; set; } // Додамо це
+        public ICollection<OrderItem> OrderItems { get; set; } 
     }
 }

@@ -7,7 +7,7 @@ namespace WorkoutShop.Services.OrderService
     public interface IOrderService
     {
         Task CreateOrderAsync(string userId);
-        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId); // Додано
+        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId); 
 
         Task<IEnumerable<Order>> GetAllOrdersAsync(string status = null);
         Task<Order> GetOrderByIdAsync(int orderId);

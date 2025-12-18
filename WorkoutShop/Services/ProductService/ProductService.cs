@@ -35,12 +35,10 @@ namespace WorkoutShop.Services.ProductService
         public async Task CreateProductAsync(Product product, string imageUrl)
         {
             product.CreatedAt = DateTime.UtcNow;
-            // Ініціалізуємо колекцію зображень, якщо вона не ініціалізована
             if (product.ProductImages == null)
             {
                 product.ProductImages = new List<ProductImage>();
             }
-            // Додаємо зображення
             if (!string.IsNullOrEmpty(imageUrl))
             {
                 product.ProductImages.Add(new ProductImage
@@ -48,7 +46,7 @@ namespace WorkoutShop.Services.ProductService
                     ImageUrl = imageUrl,
                     IsPrimary = true,
                     CreatedAt = DateTime.UtcNow,
-                    ProductId = product.ProductId // Додано встановлення ProductId
+                    ProductId = product.ProductId 
                 });
             }
 
@@ -60,21 +58,16 @@ namespace WorkoutShop.Services.ProductService
         {
             product.UpdatedAt = DateTime.UtcNow;
 
-            // Видалення зображень
             if (imagesToDelete != null && imagesToDelete.Length > 0)
             {
                 var images = product.ProductImages.Where(pi => imagesToDelete.Contains(pi.ImageId)).ToList();
                 foreach (var image in images)
                 {
-                    // Видаляємо зображення з колекції
                     product.ProductImages.Remove(image);
 
-                    // Якщо ви зберігаєте зображення на диску, видаліть файл
-                    // Якщо ні, пропустіть цей крок
                 }
             }
 
-            // Додавання нового зображення
             if (!string.IsNullOrEmpty(imageUrl))
             {
                 if (product.ProductImages == null)
@@ -99,7 +92,6 @@ namespace WorkoutShop.Services.ProductService
             var product = await _productRepository.GetProductByIdAsync(id);
             if (product != null)
             {
-                // Видалення файлів зображень з диску
                 if (product.ProductImages != null)
                 {
                     foreach (var image in product.ProductImages)

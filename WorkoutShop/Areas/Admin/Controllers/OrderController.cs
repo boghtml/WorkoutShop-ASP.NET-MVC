@@ -24,16 +24,13 @@ namespace WorkoutShop.Areas.Admin.Controllers
             ViewBag.DateSortParm = String.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
             ViewBag.PriceSortParm = sortOrder == "Price" ? "price_desc" : "Price";
 
-            // Передаємо параметр 'status' до сервісу
             var orders = await _orderService.GetAllOrdersAsync(status);
 
-            // Фільтрація за електронною поштою користувача
             if (!String.IsNullOrEmpty(searchString))
             {
                 orders = orders.Where(o => o.User.Email.Contains(searchString));
             }
 
-            // Сортування
             switch (sortOrder)
             {
                 case "date_desc":

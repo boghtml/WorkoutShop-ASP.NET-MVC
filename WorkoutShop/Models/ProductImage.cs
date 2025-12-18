@@ -7,10 +7,10 @@ namespace WorkoutShop.Models
     public class ProductImage
     {
         [Key]
-        public int ImageId { get; set; }  // Зміна типу з Guid на int
+        public int ImageId { get; set; }  
 
         [Required]
-        public int ProductId { get; set; }  // Зміна типу з Guid на int
+        public int ProductId { get; set; } 
 
         [ForeignKey("ProductId")]
         public Product Product { get; set; }

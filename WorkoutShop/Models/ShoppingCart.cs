@@ -20,6 +20,6 @@ namespace WorkoutShop.Models
 
         public DateTime? UpdatedAt { get; set; }
 
-        public ICollection<CartItem> CartItems { get; set; } // Додамо це
+        public ICollection<CartItem> CartItems { get; set; }
     }
 }

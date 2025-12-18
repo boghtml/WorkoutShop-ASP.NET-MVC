@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WorkoutShop.Models;
 using WorkoutShop.Models;
-using WorkoutShop.Repositories.OrderRepository; // Додано
+using WorkoutShop.Repositories.OrderRepository;
 using WorkoutShop.Services.ShoppingCartService;
 using WorkoutShop.Repositories.OrderRepository;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +34,7 @@ namespace WorkoutShop.Services.OrderService
                 var order = new Order
                 {
                     UserId = userId,
-                    OrderDate = DateTime.UtcNow, // Використовуємо DateTime.UtcNow
+                    OrderDate = DateTime.UtcNow, 
                     Status = "Pending",
                     TotalPrice = cart.CartItems.Sum(ci => ci.Product.Price * ci.Quantity),
                     CreatedAt = DateTime.UtcNow,
@@ -49,7 +49,6 @@ namespace WorkoutShop.Services.OrderService
 
                 await _orderRepository.AddOrderAsync(order);
 
-                // Очистити кошик після створення замовлення
                 cart.CartItems.Clear();
                 await _cartService.SaveChangesAsync();
 

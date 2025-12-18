@@ -23,7 +23,6 @@ namespace WorkoutShop.DbContext
         {
             base.OnModelCreating(modelBuilder);
 
-            // Налаштування унікального індексу на UserId в ShoppingCart
             modelBuilder.Entity<ShoppingCart>()
                 .HasIndex(sc => sc.UserId)
                 .IsUnique();

@@ -45,7 +45,7 @@ namespace WorkoutShop.Services.ShoppingCartService
                     CartId = cart.CartId,
                     ProductId = productId,
                     Quantity = quantity,
-                    CreatedAt = DateTime.UtcNow // Використовуємо DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow 
                 };
                 await _cartRepository.AddCartItemAsync(cartItem);
             }
